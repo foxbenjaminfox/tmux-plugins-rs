@@ -1,0 +1,16 @@
+[package]
+name = "tmux_plugin"
+version = "0.1.0"
+authors = ["Benjamin Fox <foxbenjaminfox@gmail.com>"]
+edition = "2018"
+license = "MIT"
+description = """
+A library for writing tmux plugins in Rust.
+This requires a forked version of tmux which
+supports plugins.
+"""
+readme = "README.md"
+keywords = ["tmux", "plugin"]
+
+[dependencies]
+libc = "0.2.43"
