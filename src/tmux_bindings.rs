@@ -3,11 +3,11 @@
 
 #[repr(C)]
 #[derive(Default)]
-pub struct __IncompleteArrayField<T>(::std::marker::PhantomData<T>);
+pub struct __IncompleteArrayField<T>(::std::marker::PhantomData<T>, [T; 0]);
 impl<T> __IncompleteArrayField<T> {
     #[inline]
     pub fn new() -> Self {
-        __IncompleteArrayField(::std::marker::PhantomData)
+        __IncompleteArrayField(::std::marker::PhantomData, [])
     }
     #[inline]
     pub unsafe fn as_ptr(&self) -> *const T {
@@ -37,7 +37,6 @@ impl<T> ::std::clone::Clone for __IncompleteArrayField<T> {
         Self::new()
     }
 }
-impl<T> ::std::marker::Copy for __IncompleteArrayField<T> {}
 pub const _SYS_TIME_H: u32 = 1;
 pub const _FEATURES_H: u32 = 1;
 pub const _DEFAULT_SOURCE: u32 = 1;
@@ -501,6 +500,8 @@ pub const SO_COOKIE: u32 = 57;
 pub const SCM_TIMESTAMPING_PKTINFO: u32 = 58;
 pub const SO_PEERGROUPS: u32 = 59;
 pub const SO_ZEROCOPY: u32 = 60;
+pub const SO_TXTIME: u32 = 61;
+pub const SCM_TXTIME: u32 = 61;
 pub const __osockaddr_defined: u32 = 1;
 pub const __USE_KERNEL_IPV6_DEFS: u32 = 0;
 pub const IP_OPTIONS: u32 = 4;
@@ -1424,6 +1425,7 @@ pub const _PATH_TMP: &'static [u8; 6usize] = b"/tmp/\0";
 pub const _PATH_DEVNULL: &'static [u8; 10usize] = b"/dev/null\0";
 pub const _PATH_TTY: &'static [u8; 9usize] = b"/dev/tty\0";
 pub const _PATH_DEV: &'static [u8; 6usize] = b"/dev/\0";
+pub const _PATH_DEFPATH: &'static [u8; 14usize] = b"/usr/bin:/bin\0";
 pub const _INTTYPES_H: u32 = 1;
 pub const ____gwchar_t_defined: u32 = 1;
 pub const __PRI64_PREFIX: &'static [u8; 2usize] = b"l\0";
@@ -1655,6 +1657,7 @@ pub const MODE_MOUSE_SGR: u32 = 512;
 pub const MODE_BRACKETPASTE: u32 = 1024;
 pub const MODE_FOCUSON: u32 = 2048;
 pub const MODE_MOUSE_ALL: u32 = 4096;
+pub const MODE_ORIGIN: u32 = 8192;
 pub const ALL_MODES: u32 = 16777215;
 pub const ALL_MOUSE_MODES: u32 = 4192;
 pub const UTF8_SIZE: u32 = 18;
@@ -1680,6 +1683,7 @@ pub const GRID_FLAG_PADDING: u32 = 4;
 pub const GRID_FLAG_EXTENDED: u32 = 8;
 pub const GRID_FLAG_SELECTED: u32 = 16;
 pub const GRID_FLAG_NOPALETTE: u32 = 32;
+pub const GRID_FLAG_CLEARED: u32 = 64;
 pub const GRID_LINE_WRAPPED: u32 = 1;
 pub const GRID_LINE_EXTENDED: u32 = 2;
 pub const GRID_LINE_DEAD: u32 = 4;
@@ -1744,6 +1748,7 @@ pub const CMDQ_NOHOOKS: u32 = 4;
 pub const CMD_STARTSERVER: u32 = 1;
 pub const CMD_READONLY: u32 = 2;
 pub const CMD_AFTERHOOK: u32 = 4;
+pub const STATUS_LINES_LIMIT: u32 = 5;
 pub const CLIENT_TERMINAL: u32 = 1;
 pub const CLIENT_LOGIN: u32 = 2;
 pub const CLIENT_EXIT: u32 = 4;
@@ -1770,12 +1775,13 @@ pub const CLIENT_SIZECHANGED: u32 = 4194304;
 pub const CLIENT_STATUSOFF: u32 = 8388608;
 pub const CLIENT_REDRAWSTATUSALWAYS: u32 = 16777216;
 pub const CLIENT_ALLREDRAWFLAGS: u32 = 16778264;
-pub const CLIENT_NOSIZEFLAGS: u32 = 4676;
+pub const CLIENT_NOSIZEFLAGS: u32 = 4672;
 pub const PROMPT_SINGLE: u32 = 1;
 pub const PROMPT_NUMERIC: u32 = 2;
 pub const PROMPT_INCREMENTAL: u32 = 4;
 pub const PROMPT_NOFORMAT: u32 = 8;
 pub const KEY_BINDING_REPEAT: u32 = 1;
+pub const OPTIONS_TABLE_IS_ARRAY: u32 = 1;
 pub const CMD_TARGET_PANE_USAGE: &'static [u8; 17usize] = b"[-t target-pane]\0";
 pub const CMD_TARGET_WINDOW_USAGE: &'static [u8; 19usize] = b"[-t target-window]\0";
 pub const CMD_TARGET_SESSION_USAGE: &'static [u8; 20usize] = b"[-t target-session]\0";
@@ -1785,9 +1791,16 @@ pub const CMD_SRCDST_WINDOW_USAGE: &'static [u8; 32usize] = b"[-s src-window] [-
 pub const CMD_SRCDST_SESSION_USAGE: &'static [u8; 34usize] = b"[-s src-session] [-t dst-session]\0";
 pub const CMD_SRCDST_CLIENT_USAGE: &'static [u8; 32usize] = b"[-s src-client] [-t dst-client]\0";
 pub const CMD_BUFFER_USAGE: &'static [u8; 17usize] = b"[-b buffer-name]\0";
+pub const SPAWN_KILL: u32 = 1;
+pub const SPAWN_DETACHED: u32 = 2;
+pub const SPAWN_RESPAWN: u32 = 4;
+pub const SPAWN_BEFORE: u32 = 8;
+pub const SPAWN_NONOTIFY: u32 = 16;
+pub const SPAWN_FULLSIZE: u32 = 32;
 pub const FORMAT_STATUS: u32 = 1;
 pub const FORMAT_FORCE: u32 = 2;
 pub const FORMAT_NOJOBS: u32 = 4;
+pub const FORMAT_VERBOSE: u32 = 8;
 pub const FORMAT_NONE: u32 = 0;
 pub const FORMAT_PANE: u32 = 2147483648;
 pub const FORMAT_WINDOW: u32 = 1073741824;
@@ -3263,11 +3276,49 @@ pub type va_list = __builtin_va_list;
 pub type __gnuc_va_list = __builtin_va_list;
 pub type wchar_t = ::std::os::raw::c_int;
 #[repr(C)]
+#[repr(align(16))]
 #[derive(Debug, Copy, Clone)]
 pub struct max_align_t {
     pub __clang_max_align_nonce1: ::std::os::raw::c_longlong,
     pub __bindgen_padding_0: u64,
-    pub __clang_max_align_nonce2: f64,
+    pub __clang_max_align_nonce2: u128,
+}
+#[test]
+fn bindgen_test_layout_max_align_t() {
+    assert_eq!(
+        ::std::mem::size_of::<max_align_t>(),
+        32usize,
+        concat!("Size of: ", stringify!(max_align_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<max_align_t>(),
+        16usize,
+        concat!("Alignment of ", stringify!(max_align_t))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<max_align_t>())).__clang_max_align_nonce1 as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(max_align_t),
+            "::",
+            stringify!(__clang_max_align_nonce1)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<max_align_t>())).__clang_max_align_nonce2 as *const _ as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(max_align_t),
+            "::",
+            stringify!(__clang_max_align_nonce2)
+        )
+    );
 }
 pub type socklen_t = __socklen_t;
 pub const __socket_type_SOCK_STREAM: __socket_type = 1;
@@ -7609,7 +7660,7 @@ extern "C" {
 extern "C" {
     pub fn snprintf(
         __s: *mut ::std::os::raw::c_char,
-        __maxlen: usize,
+        __maxlen: ::std::os::raw::c_ulong,
         __format: *const ::std::os::raw::c_char,
         ...
     ) -> ::std::os::raw::c_int;
@@ -7617,7 +7668,7 @@ extern "C" {
 extern "C" {
     pub fn vsnprintf(
         __s: *mut ::std::os::raw::c_char,
-        __maxlen: usize,
+        __maxlen: ::std::os::raw::c_ulong,
         __format: *const ::std::os::raw::c_char,
         __arg: *mut __va_list_tag,
     ) -> ::std::os::raw::c_int;
@@ -8220,8 +8271,10 @@ extern "C" {
             unsafe extern "C" fn(sz: usize) -> *mut ::std::os::raw::c_void,
         >,
         realloc_fn: ::std::option::Option<
-            unsafe extern "C" fn(ptr: *mut ::std::os::raw::c_void, sz: usize)
-                -> *mut ::std::os::raw::c_void,
+            unsafe extern "C" fn(
+                ptr: *mut ::std::os::raw::c_void,
+                sz: usize,
+            ) -> *mut ::std::os::raw::c_void,
         >,
         free_fn: ::std::option::Option<unsafe extern "C" fn(ptr: *mut ::std::os::raw::c_void)>,
     );
@@ -9692,7 +9745,7 @@ extern "C" {
 pub type _Float32 = f32;
 pub type _Float64 = f64;
 pub type _Float32x = f64;
-pub type _Float64x = f64;
+pub type _Float64x = u128;
 pub type wint_t = ::std::os::raw::c_uint;
 pub type mbstate_t = __mbstate_t;
 extern "C" {
@@ -9708,11 +9761,17 @@ extern "C" {
     pub fn wcsncat(__dest: *mut wchar_t, __src: *const wchar_t, __n: usize) -> *mut wchar_t;
 }
 extern "C" {
-    pub fn wcscmp(__s1: *const wchar_t, __s2: *const wchar_t) -> ::std::os::raw::c_int;
+    pub fn wcscmp(
+        __s1: *const ::std::os::raw::c_int,
+        __s2: *const ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn wcsncmp(__s1: *const wchar_t, __s2: *const wchar_t, __n: usize)
-        -> ::std::os::raw::c_int;
+    pub fn wcsncmp(
+        __s1: *const ::std::os::raw::c_int,
+        __s2: *const ::std::os::raw::c_int,
+        __n: ::std::os::raw::c_ulong,
+    ) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn wcscasecmp(__s1: *const wchar_t, __s2: *const wchar_t) -> ::std::os::raw::c_int;
@@ -9764,7 +9823,10 @@ extern "C" {
     pub fn wcsdup(__s: *const wchar_t) -> *mut wchar_t;
 }
 extern "C" {
-    pub fn wcschr(__wcs: *const wchar_t, __wc: wchar_t) -> *mut ::std::os::raw::c_int;
+    pub fn wcschr(
+        __wcs: *const ::std::os::raw::c_int,
+        __wc: ::std::os::raw::c_int,
+    ) -> *mut ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn wcsrchr(__wcs: *const wchar_t, __wc: wchar_t) -> *mut wchar_t;
@@ -9789,17 +9851,24 @@ extern "C" {
     ) -> *mut wchar_t;
 }
 extern "C" {
-    pub fn wcslen(__s: *const wchar_t) -> ::std::os::raw::c_ulong;
+    pub fn wcslen(__s: *const ::std::os::raw::c_int) -> ::std::os::raw::c_ulong;
 }
 extern "C" {
     pub fn wcsnlen(__s: *const wchar_t, __maxlen: usize) -> usize;
 }
 extern "C" {
-    pub fn wmemchr(__s: *const wchar_t, __c: wchar_t, __n: usize) -> *mut ::std::os::raw::c_int;
+    pub fn wmemchr(
+        __s: *const ::std::os::raw::c_int,
+        __c: ::std::os::raw::c_int,
+        __n: ::std::os::raw::c_ulong,
+    ) -> *mut ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn wmemcmp(__s1: *const wchar_t, __s2: *const wchar_t, __n: usize)
-        -> ::std::os::raw::c_int;
+    pub fn wmemcmp(
+        __s1: *const ::std::os::raw::c_int,
+        __s2: *const ::std::os::raw::c_int,
+        __n: ::std::os::raw::c_ulong,
+    ) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn wmemcpy(__s1: *mut wchar_t, __s2: *const wchar_t, __n: usize) -> *mut wchar_t;
@@ -9877,7 +9946,7 @@ extern "C" {
     pub fn wcstof(__nptr: *const wchar_t, __endptr: *mut *mut wchar_t) -> f32;
 }
 extern "C" {
-    pub fn wcstold(__nptr: *const wchar_t, __endptr: *mut *mut wchar_t) -> f64;
+    pub fn wcstold(__nptr: *const wchar_t, __endptr: *mut *mut wchar_t) -> u128;
 }
 extern "C" {
     pub fn wcstol(
@@ -11041,22 +11110,24 @@ extern "C" {
     pub fn strlcpy(
         arg1: *mut ::std::os::raw::c_char,
         arg2: *const ::std::os::raw::c_char,
-        arg3: usize,
+        arg3: ::std::os::raw::c_ulong,
     ) -> ::std::os::raw::c_ulong;
 }
 extern "C" {
     pub fn strlcat(
         arg1: *mut ::std::os::raw::c_char,
         arg2: *const ::std::os::raw::c_char,
-        arg3: usize,
+        arg3: ::std::os::raw::c_ulong,
     ) -> ::std::os::raw::c_ulong;
 }
 extern "C" {
     pub fn strnlen(arg1: *const ::std::os::raw::c_char, arg2: usize) -> usize;
 }
 extern "C" {
-    pub fn strndup(arg1: *const ::std::os::raw::c_char, arg2: usize)
-        -> *mut ::std::os::raw::c_char;
+    pub fn strndup(
+        arg1: *const ::std::os::raw::c_char,
+        arg2: ::std::os::raw::c_ulong,
+    ) -> *mut ::std::os::raw::c_char;
 }
 extern "C" {
     pub fn memmem(
@@ -11290,6 +11361,11 @@ pub struct options_entry {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
+pub struct options_array_item {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
 pub struct tmuxpeer {
     _unused: [u8; 0],
 }
@@ -11310,150 +11386,171 @@ pub const KEYC_MOUSEMOVE_PANE: _bindgen_ty_7 = 268435463;
 pub const KEYC_MOUSEMOVE_STATUS: _bindgen_ty_7 = 268435464;
 pub const KEYC_MOUSEMOVE_STATUS_LEFT: _bindgen_ty_7 = 268435465;
 pub const KEYC_MOUSEMOVE_STATUS_RIGHT: _bindgen_ty_7 = 268435466;
-pub const KEYC_MOUSEMOVE_BORDER: _bindgen_ty_7 = 268435467;
-pub const KEYC_MOUSEDOWN1_PANE: _bindgen_ty_7 = 268435468;
-pub const KEYC_MOUSEDOWN1_STATUS: _bindgen_ty_7 = 268435469;
-pub const KEYC_MOUSEDOWN1_STATUS_LEFT: _bindgen_ty_7 = 268435470;
-pub const KEYC_MOUSEDOWN1_STATUS_RIGHT: _bindgen_ty_7 = 268435471;
-pub const KEYC_MOUSEDOWN1_BORDER: _bindgen_ty_7 = 268435472;
-pub const KEYC_MOUSEDOWN2_PANE: _bindgen_ty_7 = 268435473;
-pub const KEYC_MOUSEDOWN2_STATUS: _bindgen_ty_7 = 268435474;
-pub const KEYC_MOUSEDOWN2_STATUS_LEFT: _bindgen_ty_7 = 268435475;
-pub const KEYC_MOUSEDOWN2_STATUS_RIGHT: _bindgen_ty_7 = 268435476;
-pub const KEYC_MOUSEDOWN2_BORDER: _bindgen_ty_7 = 268435477;
-pub const KEYC_MOUSEDOWN3_PANE: _bindgen_ty_7 = 268435478;
-pub const KEYC_MOUSEDOWN3_STATUS: _bindgen_ty_7 = 268435479;
-pub const KEYC_MOUSEDOWN3_STATUS_LEFT: _bindgen_ty_7 = 268435480;
-pub const KEYC_MOUSEDOWN3_STATUS_RIGHT: _bindgen_ty_7 = 268435481;
-pub const KEYC_MOUSEDOWN3_BORDER: _bindgen_ty_7 = 268435482;
-pub const KEYC_MOUSEUP1_PANE: _bindgen_ty_7 = 268435483;
-pub const KEYC_MOUSEUP1_STATUS: _bindgen_ty_7 = 268435484;
-pub const KEYC_MOUSEUP1_STATUS_LEFT: _bindgen_ty_7 = 268435485;
-pub const KEYC_MOUSEUP1_STATUS_RIGHT: _bindgen_ty_7 = 268435486;
-pub const KEYC_MOUSEUP1_BORDER: _bindgen_ty_7 = 268435487;
-pub const KEYC_MOUSEUP2_PANE: _bindgen_ty_7 = 268435488;
-pub const KEYC_MOUSEUP2_STATUS: _bindgen_ty_7 = 268435489;
-pub const KEYC_MOUSEUP2_STATUS_LEFT: _bindgen_ty_7 = 268435490;
-pub const KEYC_MOUSEUP2_STATUS_RIGHT: _bindgen_ty_7 = 268435491;
-pub const KEYC_MOUSEUP2_BORDER: _bindgen_ty_7 = 268435492;
-pub const KEYC_MOUSEUP3_PANE: _bindgen_ty_7 = 268435493;
-pub const KEYC_MOUSEUP3_STATUS: _bindgen_ty_7 = 268435494;
-pub const KEYC_MOUSEUP3_STATUS_LEFT: _bindgen_ty_7 = 268435495;
-pub const KEYC_MOUSEUP3_STATUS_RIGHT: _bindgen_ty_7 = 268435496;
-pub const KEYC_MOUSEUP3_BORDER: _bindgen_ty_7 = 268435497;
-pub const KEYC_MOUSEDRAG1_PANE: _bindgen_ty_7 = 268435498;
-pub const KEYC_MOUSEDRAG1_STATUS: _bindgen_ty_7 = 268435499;
-pub const KEYC_MOUSEDRAG1_STATUS_LEFT: _bindgen_ty_7 = 268435500;
-pub const KEYC_MOUSEDRAG1_STATUS_RIGHT: _bindgen_ty_7 = 268435501;
-pub const KEYC_MOUSEDRAG1_BORDER: _bindgen_ty_7 = 268435502;
-pub const KEYC_MOUSEDRAG2_PANE: _bindgen_ty_7 = 268435503;
-pub const KEYC_MOUSEDRAG2_STATUS: _bindgen_ty_7 = 268435504;
-pub const KEYC_MOUSEDRAG2_STATUS_LEFT: _bindgen_ty_7 = 268435505;
-pub const KEYC_MOUSEDRAG2_STATUS_RIGHT: _bindgen_ty_7 = 268435506;
-pub const KEYC_MOUSEDRAG2_BORDER: _bindgen_ty_7 = 268435507;
-pub const KEYC_MOUSEDRAG3_PANE: _bindgen_ty_7 = 268435508;
-pub const KEYC_MOUSEDRAG3_STATUS: _bindgen_ty_7 = 268435509;
-pub const KEYC_MOUSEDRAG3_STATUS_LEFT: _bindgen_ty_7 = 268435510;
-pub const KEYC_MOUSEDRAG3_STATUS_RIGHT: _bindgen_ty_7 = 268435511;
-pub const KEYC_MOUSEDRAG3_BORDER: _bindgen_ty_7 = 268435512;
-pub const KEYC_MOUSEDRAGEND1_PANE: _bindgen_ty_7 = 268435513;
-pub const KEYC_MOUSEDRAGEND1_STATUS: _bindgen_ty_7 = 268435514;
-pub const KEYC_MOUSEDRAGEND1_STATUS_LEFT: _bindgen_ty_7 = 268435515;
-pub const KEYC_MOUSEDRAGEND1_STATUS_RIGHT: _bindgen_ty_7 = 268435516;
-pub const KEYC_MOUSEDRAGEND1_BORDER: _bindgen_ty_7 = 268435517;
-pub const KEYC_MOUSEDRAGEND2_PANE: _bindgen_ty_7 = 268435518;
-pub const KEYC_MOUSEDRAGEND2_STATUS: _bindgen_ty_7 = 268435519;
-pub const KEYC_MOUSEDRAGEND2_STATUS_LEFT: _bindgen_ty_7 = 268435520;
-pub const KEYC_MOUSEDRAGEND2_STATUS_RIGHT: _bindgen_ty_7 = 268435521;
-pub const KEYC_MOUSEDRAGEND2_BORDER: _bindgen_ty_7 = 268435522;
-pub const KEYC_MOUSEDRAGEND3_PANE: _bindgen_ty_7 = 268435523;
-pub const KEYC_MOUSEDRAGEND3_STATUS: _bindgen_ty_7 = 268435524;
-pub const KEYC_MOUSEDRAGEND3_STATUS_LEFT: _bindgen_ty_7 = 268435525;
-pub const KEYC_MOUSEDRAGEND3_STATUS_RIGHT: _bindgen_ty_7 = 268435526;
-pub const KEYC_MOUSEDRAGEND3_BORDER: _bindgen_ty_7 = 268435527;
-pub const KEYC_WHEELUP_PANE: _bindgen_ty_7 = 268435528;
-pub const KEYC_WHEELUP_STATUS: _bindgen_ty_7 = 268435529;
-pub const KEYC_WHEELUP_STATUS_LEFT: _bindgen_ty_7 = 268435530;
-pub const KEYC_WHEELUP_STATUS_RIGHT: _bindgen_ty_7 = 268435531;
-pub const KEYC_WHEELUP_BORDER: _bindgen_ty_7 = 268435532;
-pub const KEYC_WHEELDOWN_PANE: _bindgen_ty_7 = 268435533;
-pub const KEYC_WHEELDOWN_STATUS: _bindgen_ty_7 = 268435534;
-pub const KEYC_WHEELDOWN_STATUS_LEFT: _bindgen_ty_7 = 268435535;
-pub const KEYC_WHEELDOWN_STATUS_RIGHT: _bindgen_ty_7 = 268435536;
-pub const KEYC_WHEELDOWN_BORDER: _bindgen_ty_7 = 268435537;
-pub const KEYC_DOUBLECLICK1_PANE: _bindgen_ty_7 = 268435538;
-pub const KEYC_DOUBLECLICK1_STATUS: _bindgen_ty_7 = 268435539;
-pub const KEYC_DOUBLECLICK1_STATUS_LEFT: _bindgen_ty_7 = 268435540;
-pub const KEYC_DOUBLECLICK1_STATUS_RIGHT: _bindgen_ty_7 = 268435541;
-pub const KEYC_DOUBLECLICK1_BORDER: _bindgen_ty_7 = 268435542;
-pub const KEYC_DOUBLECLICK2_PANE: _bindgen_ty_7 = 268435543;
-pub const KEYC_DOUBLECLICK2_STATUS: _bindgen_ty_7 = 268435544;
-pub const KEYC_DOUBLECLICK2_STATUS_LEFT: _bindgen_ty_7 = 268435545;
-pub const KEYC_DOUBLECLICK2_STATUS_RIGHT: _bindgen_ty_7 = 268435546;
-pub const KEYC_DOUBLECLICK2_BORDER: _bindgen_ty_7 = 268435547;
-pub const KEYC_DOUBLECLICK3_PANE: _bindgen_ty_7 = 268435548;
-pub const KEYC_DOUBLECLICK3_STATUS: _bindgen_ty_7 = 268435549;
-pub const KEYC_DOUBLECLICK3_STATUS_LEFT: _bindgen_ty_7 = 268435550;
-pub const KEYC_DOUBLECLICK3_STATUS_RIGHT: _bindgen_ty_7 = 268435551;
-pub const KEYC_DOUBLECLICK3_BORDER: _bindgen_ty_7 = 268435552;
-pub const KEYC_TRIPLECLICK1_PANE: _bindgen_ty_7 = 268435553;
-pub const KEYC_TRIPLECLICK1_STATUS: _bindgen_ty_7 = 268435554;
-pub const KEYC_TRIPLECLICK1_STATUS_LEFT: _bindgen_ty_7 = 268435555;
-pub const KEYC_TRIPLECLICK1_STATUS_RIGHT: _bindgen_ty_7 = 268435556;
-pub const KEYC_TRIPLECLICK1_BORDER: _bindgen_ty_7 = 268435557;
-pub const KEYC_TRIPLECLICK2_PANE: _bindgen_ty_7 = 268435558;
-pub const KEYC_TRIPLECLICK2_STATUS: _bindgen_ty_7 = 268435559;
-pub const KEYC_TRIPLECLICK2_STATUS_LEFT: _bindgen_ty_7 = 268435560;
-pub const KEYC_TRIPLECLICK2_STATUS_RIGHT: _bindgen_ty_7 = 268435561;
-pub const KEYC_TRIPLECLICK2_BORDER: _bindgen_ty_7 = 268435562;
-pub const KEYC_TRIPLECLICK3_PANE: _bindgen_ty_7 = 268435563;
-pub const KEYC_TRIPLECLICK3_STATUS: _bindgen_ty_7 = 268435564;
-pub const KEYC_TRIPLECLICK3_STATUS_LEFT: _bindgen_ty_7 = 268435565;
-pub const KEYC_TRIPLECLICK3_STATUS_RIGHT: _bindgen_ty_7 = 268435566;
-pub const KEYC_TRIPLECLICK3_BORDER: _bindgen_ty_7 = 268435567;
-pub const KEYC_BSPACE: _bindgen_ty_7 = 268435568;
-pub const KEYC_F1: _bindgen_ty_7 = 268435569;
-pub const KEYC_F2: _bindgen_ty_7 = 268435570;
-pub const KEYC_F3: _bindgen_ty_7 = 268435571;
-pub const KEYC_F4: _bindgen_ty_7 = 268435572;
-pub const KEYC_F5: _bindgen_ty_7 = 268435573;
-pub const KEYC_F6: _bindgen_ty_7 = 268435574;
-pub const KEYC_F7: _bindgen_ty_7 = 268435575;
-pub const KEYC_F8: _bindgen_ty_7 = 268435576;
-pub const KEYC_F9: _bindgen_ty_7 = 268435577;
-pub const KEYC_F10: _bindgen_ty_7 = 268435578;
-pub const KEYC_F11: _bindgen_ty_7 = 268435579;
-pub const KEYC_F12: _bindgen_ty_7 = 268435580;
-pub const KEYC_IC: _bindgen_ty_7 = 268435581;
-pub const KEYC_DC: _bindgen_ty_7 = 268435582;
-pub const KEYC_HOME: _bindgen_ty_7 = 268435583;
-pub const KEYC_END: _bindgen_ty_7 = 268435584;
-pub const KEYC_NPAGE: _bindgen_ty_7 = 268435585;
-pub const KEYC_PPAGE: _bindgen_ty_7 = 268435586;
-pub const KEYC_BTAB: _bindgen_ty_7 = 268435587;
-pub const KEYC_UP: _bindgen_ty_7 = 268435588;
-pub const KEYC_DOWN: _bindgen_ty_7 = 268435589;
-pub const KEYC_LEFT: _bindgen_ty_7 = 268435590;
-pub const KEYC_RIGHT: _bindgen_ty_7 = 268435591;
-pub const KEYC_KP_SLASH: _bindgen_ty_7 = 268435592;
-pub const KEYC_KP_STAR: _bindgen_ty_7 = 268435593;
-pub const KEYC_KP_MINUS: _bindgen_ty_7 = 268435594;
-pub const KEYC_KP_SEVEN: _bindgen_ty_7 = 268435595;
-pub const KEYC_KP_EIGHT: _bindgen_ty_7 = 268435596;
-pub const KEYC_KP_NINE: _bindgen_ty_7 = 268435597;
-pub const KEYC_KP_PLUS: _bindgen_ty_7 = 268435598;
-pub const KEYC_KP_FOUR: _bindgen_ty_7 = 268435599;
-pub const KEYC_KP_FIVE: _bindgen_ty_7 = 268435600;
-pub const KEYC_KP_SIX: _bindgen_ty_7 = 268435601;
-pub const KEYC_KP_ONE: _bindgen_ty_7 = 268435602;
-pub const KEYC_KP_TWO: _bindgen_ty_7 = 268435603;
-pub const KEYC_KP_THREE: _bindgen_ty_7 = 268435604;
-pub const KEYC_KP_ENTER: _bindgen_ty_7 = 268435605;
-pub const KEYC_KP_ZERO: _bindgen_ty_7 = 268435606;
-pub const KEYC_KP_PERIOD: _bindgen_ty_7 = 268435607;
+pub const KEYC_MOUSEMOVE_STATUS_DEFAULT: _bindgen_ty_7 = 268435467;
+pub const KEYC_MOUSEMOVE_BORDER: _bindgen_ty_7 = 268435468;
+pub const KEYC_MOUSEDOWN1_PANE: _bindgen_ty_7 = 268435469;
+pub const KEYC_MOUSEDOWN1_STATUS: _bindgen_ty_7 = 268435470;
+pub const KEYC_MOUSEDOWN1_STATUS_LEFT: _bindgen_ty_7 = 268435471;
+pub const KEYC_MOUSEDOWN1_STATUS_RIGHT: _bindgen_ty_7 = 268435472;
+pub const KEYC_MOUSEDOWN1_STATUS_DEFAULT: _bindgen_ty_7 = 268435473;
+pub const KEYC_MOUSEDOWN1_BORDER: _bindgen_ty_7 = 268435474;
+pub const KEYC_MOUSEDOWN2_PANE: _bindgen_ty_7 = 268435475;
+pub const KEYC_MOUSEDOWN2_STATUS: _bindgen_ty_7 = 268435476;
+pub const KEYC_MOUSEDOWN2_STATUS_LEFT: _bindgen_ty_7 = 268435477;
+pub const KEYC_MOUSEDOWN2_STATUS_RIGHT: _bindgen_ty_7 = 268435478;
+pub const KEYC_MOUSEDOWN2_STATUS_DEFAULT: _bindgen_ty_7 = 268435479;
+pub const KEYC_MOUSEDOWN2_BORDER: _bindgen_ty_7 = 268435480;
+pub const KEYC_MOUSEDOWN3_PANE: _bindgen_ty_7 = 268435481;
+pub const KEYC_MOUSEDOWN3_STATUS: _bindgen_ty_7 = 268435482;
+pub const KEYC_MOUSEDOWN3_STATUS_LEFT: _bindgen_ty_7 = 268435483;
+pub const KEYC_MOUSEDOWN3_STATUS_RIGHT: _bindgen_ty_7 = 268435484;
+pub const KEYC_MOUSEDOWN3_STATUS_DEFAULT: _bindgen_ty_7 = 268435485;
+pub const KEYC_MOUSEDOWN3_BORDER: _bindgen_ty_7 = 268435486;
+pub const KEYC_MOUSEUP1_PANE: _bindgen_ty_7 = 268435487;
+pub const KEYC_MOUSEUP1_STATUS: _bindgen_ty_7 = 268435488;
+pub const KEYC_MOUSEUP1_STATUS_LEFT: _bindgen_ty_7 = 268435489;
+pub const KEYC_MOUSEUP1_STATUS_RIGHT: _bindgen_ty_7 = 268435490;
+pub const KEYC_MOUSEUP1_STATUS_DEFAULT: _bindgen_ty_7 = 268435491;
+pub const KEYC_MOUSEUP1_BORDER: _bindgen_ty_7 = 268435492;
+pub const KEYC_MOUSEUP2_PANE: _bindgen_ty_7 = 268435493;
+pub const KEYC_MOUSEUP2_STATUS: _bindgen_ty_7 = 268435494;
+pub const KEYC_MOUSEUP2_STATUS_LEFT: _bindgen_ty_7 = 268435495;
+pub const KEYC_MOUSEUP2_STATUS_RIGHT: _bindgen_ty_7 = 268435496;
+pub const KEYC_MOUSEUP2_STATUS_DEFAULT: _bindgen_ty_7 = 268435497;
+pub const KEYC_MOUSEUP2_BORDER: _bindgen_ty_7 = 268435498;
+pub const KEYC_MOUSEUP3_PANE: _bindgen_ty_7 = 268435499;
+pub const KEYC_MOUSEUP3_STATUS: _bindgen_ty_7 = 268435500;
+pub const KEYC_MOUSEUP3_STATUS_LEFT: _bindgen_ty_7 = 268435501;
+pub const KEYC_MOUSEUP3_STATUS_RIGHT: _bindgen_ty_7 = 268435502;
+pub const KEYC_MOUSEUP3_STATUS_DEFAULT: _bindgen_ty_7 = 268435503;
+pub const KEYC_MOUSEUP3_BORDER: _bindgen_ty_7 = 268435504;
+pub const KEYC_MOUSEDRAG1_PANE: _bindgen_ty_7 = 268435505;
+pub const KEYC_MOUSEDRAG1_STATUS: _bindgen_ty_7 = 268435506;
+pub const KEYC_MOUSEDRAG1_STATUS_LEFT: _bindgen_ty_7 = 268435507;
+pub const KEYC_MOUSEDRAG1_STATUS_RIGHT: _bindgen_ty_7 = 268435508;
+pub const KEYC_MOUSEDRAG1_STATUS_DEFAULT: _bindgen_ty_7 = 268435509;
+pub const KEYC_MOUSEDRAG1_BORDER: _bindgen_ty_7 = 268435510;
+pub const KEYC_MOUSEDRAG2_PANE: _bindgen_ty_7 = 268435511;
+pub const KEYC_MOUSEDRAG2_STATUS: _bindgen_ty_7 = 268435512;
+pub const KEYC_MOUSEDRAG2_STATUS_LEFT: _bindgen_ty_7 = 268435513;
+pub const KEYC_MOUSEDRAG2_STATUS_RIGHT: _bindgen_ty_7 = 268435514;
+pub const KEYC_MOUSEDRAG2_STATUS_DEFAULT: _bindgen_ty_7 = 268435515;
+pub const KEYC_MOUSEDRAG2_BORDER: _bindgen_ty_7 = 268435516;
+pub const KEYC_MOUSEDRAG3_PANE: _bindgen_ty_7 = 268435517;
+pub const KEYC_MOUSEDRAG3_STATUS: _bindgen_ty_7 = 268435518;
+pub const KEYC_MOUSEDRAG3_STATUS_LEFT: _bindgen_ty_7 = 268435519;
+pub const KEYC_MOUSEDRAG3_STATUS_RIGHT: _bindgen_ty_7 = 268435520;
+pub const KEYC_MOUSEDRAG3_STATUS_DEFAULT: _bindgen_ty_7 = 268435521;
+pub const KEYC_MOUSEDRAG3_BORDER: _bindgen_ty_7 = 268435522;
+pub const KEYC_MOUSEDRAGEND1_PANE: _bindgen_ty_7 = 268435523;
+pub const KEYC_MOUSEDRAGEND1_STATUS: _bindgen_ty_7 = 268435524;
+pub const KEYC_MOUSEDRAGEND1_STATUS_LEFT: _bindgen_ty_7 = 268435525;
+pub const KEYC_MOUSEDRAGEND1_STATUS_RIGHT: _bindgen_ty_7 = 268435526;
+pub const KEYC_MOUSEDRAGEND1_STATUS_DEFAULT: _bindgen_ty_7 = 268435527;
+pub const KEYC_MOUSEDRAGEND1_BORDER: _bindgen_ty_7 = 268435528;
+pub const KEYC_MOUSEDRAGEND2_PANE: _bindgen_ty_7 = 268435529;
+pub const KEYC_MOUSEDRAGEND2_STATUS: _bindgen_ty_7 = 268435530;
+pub const KEYC_MOUSEDRAGEND2_STATUS_LEFT: _bindgen_ty_7 = 268435531;
+pub const KEYC_MOUSEDRAGEND2_STATUS_RIGHT: _bindgen_ty_7 = 268435532;
+pub const KEYC_MOUSEDRAGEND2_STATUS_DEFAULT: _bindgen_ty_7 = 268435533;
+pub const KEYC_MOUSEDRAGEND2_BORDER: _bindgen_ty_7 = 268435534;
+pub const KEYC_MOUSEDRAGEND3_PANE: _bindgen_ty_7 = 268435535;
+pub const KEYC_MOUSEDRAGEND3_STATUS: _bindgen_ty_7 = 268435536;
+pub const KEYC_MOUSEDRAGEND3_STATUS_LEFT: _bindgen_ty_7 = 268435537;
+pub const KEYC_MOUSEDRAGEND3_STATUS_RIGHT: _bindgen_ty_7 = 268435538;
+pub const KEYC_MOUSEDRAGEND3_STATUS_DEFAULT: _bindgen_ty_7 = 268435539;
+pub const KEYC_MOUSEDRAGEND3_BORDER: _bindgen_ty_7 = 268435540;
+pub const KEYC_WHEELUP_PANE: _bindgen_ty_7 = 268435541;
+pub const KEYC_WHEELUP_STATUS: _bindgen_ty_7 = 268435542;
+pub const KEYC_WHEELUP_STATUS_LEFT: _bindgen_ty_7 = 268435543;
+pub const KEYC_WHEELUP_STATUS_RIGHT: _bindgen_ty_7 = 268435544;
+pub const KEYC_WHEELUP_STATUS_DEFAULT: _bindgen_ty_7 = 268435545;
+pub const KEYC_WHEELUP_BORDER: _bindgen_ty_7 = 268435546;
+pub const KEYC_WHEELDOWN_PANE: _bindgen_ty_7 = 268435547;
+pub const KEYC_WHEELDOWN_STATUS: _bindgen_ty_7 = 268435548;
+pub const KEYC_WHEELDOWN_STATUS_LEFT: _bindgen_ty_7 = 268435549;
+pub const KEYC_WHEELDOWN_STATUS_RIGHT: _bindgen_ty_7 = 268435550;
+pub const KEYC_WHEELDOWN_STATUS_DEFAULT: _bindgen_ty_7 = 268435551;
+pub const KEYC_WHEELDOWN_BORDER: _bindgen_ty_7 = 268435552;
+pub const KEYC_DOUBLECLICK1_PANE: _bindgen_ty_7 = 268435553;
+pub const KEYC_DOUBLECLICK1_STATUS: _bindgen_ty_7 = 268435554;
+pub const KEYC_DOUBLECLICK1_STATUS_LEFT: _bindgen_ty_7 = 268435555;
+pub const KEYC_DOUBLECLICK1_STATUS_RIGHT: _bindgen_ty_7 = 268435556;
+pub const KEYC_DOUBLECLICK1_STATUS_DEFAULT: _bindgen_ty_7 = 268435557;
+pub const KEYC_DOUBLECLICK1_BORDER: _bindgen_ty_7 = 268435558;
+pub const KEYC_DOUBLECLICK2_PANE: _bindgen_ty_7 = 268435559;
+pub const KEYC_DOUBLECLICK2_STATUS: _bindgen_ty_7 = 268435560;
+pub const KEYC_DOUBLECLICK2_STATUS_LEFT: _bindgen_ty_7 = 268435561;
+pub const KEYC_DOUBLECLICK2_STATUS_RIGHT: _bindgen_ty_7 = 268435562;
+pub const KEYC_DOUBLECLICK2_STATUS_DEFAULT: _bindgen_ty_7 = 268435563;
+pub const KEYC_DOUBLECLICK2_BORDER: _bindgen_ty_7 = 268435564;
+pub const KEYC_DOUBLECLICK3_PANE: _bindgen_ty_7 = 268435565;
+pub const KEYC_DOUBLECLICK3_STATUS: _bindgen_ty_7 = 268435566;
+pub const KEYC_DOUBLECLICK3_STATUS_LEFT: _bindgen_ty_7 = 268435567;
+pub const KEYC_DOUBLECLICK3_STATUS_RIGHT: _bindgen_ty_7 = 268435568;
+pub const KEYC_DOUBLECLICK3_STATUS_DEFAULT: _bindgen_ty_7 = 268435569;
+pub const KEYC_DOUBLECLICK3_BORDER: _bindgen_ty_7 = 268435570;
+pub const KEYC_TRIPLECLICK1_PANE: _bindgen_ty_7 = 268435571;
+pub const KEYC_TRIPLECLICK1_STATUS: _bindgen_ty_7 = 268435572;
+pub const KEYC_TRIPLECLICK1_STATUS_LEFT: _bindgen_ty_7 = 268435573;
+pub const KEYC_TRIPLECLICK1_STATUS_RIGHT: _bindgen_ty_7 = 268435574;
+pub const KEYC_TRIPLECLICK1_STATUS_DEFAULT: _bindgen_ty_7 = 268435575;
+pub const KEYC_TRIPLECLICK1_BORDER: _bindgen_ty_7 = 268435576;
+pub const KEYC_TRIPLECLICK2_PANE: _bindgen_ty_7 = 268435577;
+pub const KEYC_TRIPLECLICK2_STATUS: _bindgen_ty_7 = 268435578;
+pub const KEYC_TRIPLECLICK2_STATUS_LEFT: _bindgen_ty_7 = 268435579;
+pub const KEYC_TRIPLECLICK2_STATUS_RIGHT: _bindgen_ty_7 = 268435580;
+pub const KEYC_TRIPLECLICK2_STATUS_DEFAULT: _bindgen_ty_7 = 268435581;
+pub const KEYC_TRIPLECLICK2_BORDER: _bindgen_ty_7 = 268435582;
+pub const KEYC_TRIPLECLICK3_PANE: _bindgen_ty_7 = 268435583;
+pub const KEYC_TRIPLECLICK3_STATUS: _bindgen_ty_7 = 268435584;
+pub const KEYC_TRIPLECLICK3_STATUS_LEFT: _bindgen_ty_7 = 268435585;
+pub const KEYC_TRIPLECLICK3_STATUS_RIGHT: _bindgen_ty_7 = 268435586;
+pub const KEYC_TRIPLECLICK3_STATUS_DEFAULT: _bindgen_ty_7 = 268435587;
+pub const KEYC_TRIPLECLICK3_BORDER: _bindgen_ty_7 = 268435588;
+pub const KEYC_BSPACE: _bindgen_ty_7 = 268435589;
+pub const KEYC_F1: _bindgen_ty_7 = 268435590;
+pub const KEYC_F2: _bindgen_ty_7 = 268435591;
+pub const KEYC_F3: _bindgen_ty_7 = 268435592;
+pub const KEYC_F4: _bindgen_ty_7 = 268435593;
+pub const KEYC_F5: _bindgen_ty_7 = 268435594;
+pub const KEYC_F6: _bindgen_ty_7 = 268435595;
+pub const KEYC_F7: _bindgen_ty_7 = 268435596;
+pub const KEYC_F8: _bindgen_ty_7 = 268435597;
+pub const KEYC_F9: _bindgen_ty_7 = 268435598;
+pub const KEYC_F10: _bindgen_ty_7 = 268435599;
+pub const KEYC_F11: _bindgen_ty_7 = 268435600;
+pub const KEYC_F12: _bindgen_ty_7 = 268435601;
+pub const KEYC_IC: _bindgen_ty_7 = 268435602;
+pub const KEYC_DC: _bindgen_ty_7 = 268435603;
+pub const KEYC_HOME: _bindgen_ty_7 = 268435604;
+pub const KEYC_END: _bindgen_ty_7 = 268435605;
+pub const KEYC_NPAGE: _bindgen_ty_7 = 268435606;
+pub const KEYC_PPAGE: _bindgen_ty_7 = 268435607;
+pub const KEYC_BTAB: _bindgen_ty_7 = 268435608;
+pub const KEYC_UP: _bindgen_ty_7 = 268435609;
+pub const KEYC_DOWN: _bindgen_ty_7 = 268435610;
+pub const KEYC_LEFT: _bindgen_ty_7 = 268435611;
+pub const KEYC_RIGHT: _bindgen_ty_7 = 268435612;
+pub const KEYC_KP_SLASH: _bindgen_ty_7 = 268435613;
+pub const KEYC_KP_STAR: _bindgen_ty_7 = 268435614;
+pub const KEYC_KP_MINUS: _bindgen_ty_7 = 268435615;
+pub const KEYC_KP_SEVEN: _bindgen_ty_7 = 268435616;
+pub const KEYC_KP_EIGHT: _bindgen_ty_7 = 268435617;
+pub const KEYC_KP_NINE: _bindgen_ty_7 = 268435618;
+pub const KEYC_KP_PLUS: _bindgen_ty_7 = 268435619;
+pub const KEYC_KP_FOUR: _bindgen_ty_7 = 268435620;
+pub const KEYC_KP_FIVE: _bindgen_ty_7 = 268435621;
+pub const KEYC_KP_SIX: _bindgen_ty_7 = 268435622;
+pub const KEYC_KP_ONE: _bindgen_ty_7 = 268435623;
+pub const KEYC_KP_TWO: _bindgen_ty_7 = 268435624;
+pub const KEYC_KP_THREE: _bindgen_ty_7 = 268435625;
+pub const KEYC_KP_ENTER: _bindgen_ty_7 = 268435626;
+pub const KEYC_KP_ZERO: _bindgen_ty_7 = 268435627;
+pub const KEYC_KP_PERIOD: _bindgen_ty_7 = 268435628;
 pub type _bindgen_ty_7 = u32;
-pub const tty_code_code_TTYC_AX: tty_code_code = 0;
-pub const tty_code_code_TTYC_ACSC: tty_code_code = 1;
+pub const tty_code_code_TTYC_ACSC: tty_code_code = 0;
+pub const tty_code_code_TTYC_AX: tty_code_code = 1;
 pub const tty_code_code_TTYC_BCE: tty_code_code = 2;
 pub const tty_code_code_TTYC_BEL: tty_code_code = 3;
 pub const tty_code_code_TTYC_BLINK: tty_code_code = 4;
@@ -12292,6 +12389,243 @@ fn bindgen_test_layout_grid() {
         )
     );
 }
+pub const style_align_STYLE_ALIGN_DEFAULT: style_align = 0;
+pub const style_align_STYLE_ALIGN_LEFT: style_align = 1;
+pub const style_align_STYLE_ALIGN_CENTRE: style_align = 2;
+pub const style_align_STYLE_ALIGN_RIGHT: style_align = 3;
+pub type style_align = u32;
+pub const style_list_STYLE_LIST_OFF: style_list = 0;
+pub const style_list_STYLE_LIST_ON: style_list = 1;
+pub const style_list_STYLE_LIST_FOCUS: style_list = 2;
+pub const style_list_STYLE_LIST_LEFT_MARKER: style_list = 3;
+pub const style_list_STYLE_LIST_RIGHT_MARKER: style_list = 4;
+pub type style_list = u32;
+pub const style_range_type_STYLE_RANGE_NONE: style_range_type = 0;
+pub const style_range_type_STYLE_RANGE_LEFT: style_range_type = 1;
+pub const style_range_type_STYLE_RANGE_RIGHT: style_range_type = 2;
+pub const style_range_type_STYLE_RANGE_WINDOW: style_range_type = 3;
+pub type style_range_type = u32;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct style_range {
+    pub type_: style_range_type,
+    pub argument: u_int,
+    pub start: u_int,
+    pub end: u_int,
+    pub entry: style_range__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct style_range__bindgen_ty_1 {
+    pub tqe_next: *mut style_range,
+    pub tqe_prev: *mut *mut style_range,
+}
+#[test]
+fn bindgen_test_layout_style_range__bindgen_ty_1() {
+    assert_eq!(
+        ::std::mem::size_of::<style_range__bindgen_ty_1>(),
+        16usize,
+        concat!("Size of: ", stringify!(style_range__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<style_range__bindgen_ty_1>(),
+        8usize,
+        concat!("Alignment of ", stringify!(style_range__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<style_range__bindgen_ty_1>())).tqe_next as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(style_range__bindgen_ty_1),
+            "::",
+            stringify!(tqe_next)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<style_range__bindgen_ty_1>())).tqe_prev as *const _ as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(style_range__bindgen_ty_1),
+            "::",
+            stringify!(tqe_prev)
+        )
+    );
+}
+#[test]
+fn bindgen_test_layout_style_range() {
+    assert_eq!(
+        ::std::mem::size_of::<style_range>(),
+        32usize,
+        concat!("Size of: ", stringify!(style_range))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<style_range>(),
+        8usize,
+        concat!("Alignment of ", stringify!(style_range))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<style_range>())).type_ as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(style_range),
+            "::",
+            stringify!(type_)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<style_range>())).argument as *const _ as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(style_range),
+            "::",
+            stringify!(argument)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<style_range>())).start as *const _ as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(style_range),
+            "::",
+            stringify!(start)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<style_range>())).end as *const _ as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(style_range),
+            "::",
+            stringify!(end)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<style_range>())).entry as *const _ as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(style_range),
+            "::",
+            stringify!(entry)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct style_ranges {
+    pub tqh_first: *mut style_range,
+    pub tqh_last: *mut *mut style_range,
+}
+#[test]
+fn bindgen_test_layout_style_ranges() {
+    assert_eq!(
+        ::std::mem::size_of::<style_ranges>(),
+        16usize,
+        concat!("Size of: ", stringify!(style_ranges))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<style_ranges>(),
+        8usize,
+        concat!("Alignment of ", stringify!(style_ranges))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<style_ranges>())).tqh_first as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(style_ranges),
+            "::",
+            stringify!(tqh_first)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<style_ranges>())).tqh_last as *const _ as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(style_ranges),
+            "::",
+            stringify!(tqh_last)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct style {
+    pub gc: grid_cell,
+    pub align: style_align,
+    pub list: style_list,
+    pub range_type: style_range_type,
+    pub range_argument: u_int,
+}
+#[test]
+fn bindgen_test_layout_style() {
+    assert_eq!(
+        ::std::mem::size_of::<style>(),
+        52usize,
+        concat!("Size of: ", stringify!(style))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<style>(),
+        4usize,
+        concat!("Alignment of ", stringify!(style))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<style>())).gc as *const _ as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(style), "::", stringify!(gc))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<style>())).align as *const _ as usize },
+        36usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(style),
+            "::",
+            stringify!(align)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<style>())).list as *const _ as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(style),
+            "::",
+            stringify!(list)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<style>())).range_type as *const _ as usize },
+        44usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(style),
+            "::",
+            stringify!(range_type)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<style>())).range_argument as *const _ as usize },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(style),
+            "::",
+            stringify!(range_argument)
+        )
+    );
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct hook {
@@ -12692,41 +13026,50 @@ fn bindgen_test_layout_screen_write_ctx() {
 #[derive(Debug, Copy, Clone)]
 pub struct window_mode {
     pub name: *const ::std::os::raw::c_char,
+    pub default_format: *const ::std::os::raw::c_char,
     pub init: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut window_pane, arg2: *mut cmd_find_state, arg3: *mut args)
-            -> *mut screen,
+        unsafe extern "C" fn(
+            arg1: *mut window_mode_entry,
+            arg2: *mut cmd_find_state,
+            arg3: *mut args,
+        ) -> *mut screen,
     >,
-    pub free: ::std::option::Option<unsafe extern "C" fn(arg1: *mut window_pane)>,
+    pub free: ::std::option::Option<unsafe extern "C" fn(arg1: *mut window_mode_entry)>,
     pub resize: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut window_pane, arg2: u_int, arg3: u_int),
+        unsafe extern "C" fn(arg1: *mut window_mode_entry, arg2: u_int, arg3: u_int),
     >,
     pub key: ::std::option::Option<
         unsafe extern "C" fn(
-            arg1: *mut window_pane,
+            arg1: *mut window_mode_entry,
             arg2: *mut client,
             arg3: *mut session,
-            arg4: key_code,
-            arg5: *mut mouse_event,
+            arg4: *mut winlink,
+            arg5: key_code,
+            arg6: *mut mouse_event,
         ),
     >,
     pub key_table: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut window_pane) -> *const ::std::os::raw::c_char,
+        unsafe extern "C" fn(arg1: *mut window_mode_entry) -> *const ::std::os::raw::c_char,
     >,
     pub command: ::std::option::Option<
         unsafe extern "C" fn(
-            arg1: *mut window_pane,
+            arg1: *mut window_mode_entry,
             arg2: *mut client,
             arg3: *mut session,
-            arg4: *mut args,
-            arg5: *mut mouse_event,
+            arg4: *mut winlink,
+            arg5: *mut args,
+            arg6: *mut mouse_event,
         ),
+    >,
+    pub formats: ::std::option::Option<
+        unsafe extern "C" fn(arg1: *mut window_mode_entry, arg2: *mut format_tree),
     >,
 }
 #[test]
 fn bindgen_test_layout_window_mode() {
     assert_eq!(
         ::std::mem::size_of::<window_mode>(),
-        56usize,
+        72usize,
         concat!("Size of: ", stringify!(window_mode))
     );
     assert_eq!(
@@ -12745,8 +13088,18 @@ fn bindgen_test_layout_window_mode() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<window_mode>())).init as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<window_mode>())).default_format as *const _ as usize },
         8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(window_mode),
+            "::",
+            stringify!(default_format)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<window_mode>())).init as *const _ as usize },
+        16usize,
         concat!(
             "Offset of field: ",
             stringify!(window_mode),
@@ -12756,7 +13109,7 @@ fn bindgen_test_layout_window_mode() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_mode>())).free as *const _ as usize },
-        16usize,
+        24usize,
         concat!(
             "Offset of field: ",
             stringify!(window_mode),
@@ -12766,7 +13119,7 @@ fn bindgen_test_layout_window_mode() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_mode>())).resize as *const _ as usize },
-        24usize,
+        32usize,
         concat!(
             "Offset of field: ",
             stringify!(window_mode),
@@ -12776,7 +13129,7 @@ fn bindgen_test_layout_window_mode() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_mode>())).key as *const _ as usize },
-        32usize,
+        40usize,
         concat!(
             "Offset of field: ",
             stringify!(window_mode),
@@ -12786,7 +13139,7 @@ fn bindgen_test_layout_window_mode() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_mode>())).key_table as *const _ as usize },
-        40usize,
+        48usize,
         concat!(
             "Offset of field: ",
             stringify!(window_mode),
@@ -12796,12 +13149,150 @@ fn bindgen_test_layout_window_mode() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_mode>())).command as *const _ as usize },
-        48usize,
+        56usize,
         concat!(
             "Offset of field: ",
             stringify!(window_mode),
             "::",
             stringify!(command)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<window_mode>())).formats as *const _ as usize },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(window_mode),
+            "::",
+            stringify!(formats)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct window_mode_entry {
+    pub wp: *mut window_pane,
+    pub mode: *const window_mode,
+    pub data: *mut ::std::os::raw::c_void,
+    pub screen: *mut screen,
+    pub prefix: u_int,
+    pub entry: window_mode_entry__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct window_mode_entry__bindgen_ty_1 {
+    pub tqe_next: *mut window_mode_entry,
+    pub tqe_prev: *mut *mut window_mode_entry,
+}
+#[test]
+fn bindgen_test_layout_window_mode_entry__bindgen_ty_1() {
+    assert_eq!(
+        ::std::mem::size_of::<window_mode_entry__bindgen_ty_1>(),
+        16usize,
+        concat!("Size of: ", stringify!(window_mode_entry__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<window_mode_entry__bindgen_ty_1>(),
+        8usize,
+        concat!("Alignment of ", stringify!(window_mode_entry__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<window_mode_entry__bindgen_ty_1>())).tqe_next as *const _
+                as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(window_mode_entry__bindgen_ty_1),
+            "::",
+            stringify!(tqe_next)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<window_mode_entry__bindgen_ty_1>())).tqe_prev as *const _
+                as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(window_mode_entry__bindgen_ty_1),
+            "::",
+            stringify!(tqe_prev)
+        )
+    );
+}
+#[test]
+fn bindgen_test_layout_window_mode_entry() {
+    assert_eq!(
+        ::std::mem::size_of::<window_mode_entry>(),
+        56usize,
+        concat!("Size of: ", stringify!(window_mode_entry))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<window_mode_entry>(),
+        8usize,
+        concat!("Alignment of ", stringify!(window_mode_entry))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<window_mode_entry>())).wp as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(window_mode_entry),
+            "::",
+            stringify!(wp)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<window_mode_entry>())).mode as *const _ as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(window_mode_entry),
+            "::",
+            stringify!(mode)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<window_mode_entry>())).data as *const _ as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(window_mode_entry),
+            "::",
+            stringify!(data)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<window_mode_entry>())).screen as *const _ as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(window_mode_entry),
+            "::",
+            stringify!(screen)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<window_mode_entry>())).prefix as *const _ as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(window_mode_entry),
+            "::",
+            stringify!(prefix)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<window_mode_entry>())).entry as *const _ as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(window_mode_entry),
+            "::",
+            stringify!(entry)
         )
     );
 }
@@ -12823,15 +13314,16 @@ pub struct window_pane {
     pub argc: ::std::os::raw::c_int,
     pub argv: *mut *mut ::std::os::raw::c_char,
     pub shell: *mut ::std::os::raw::c_char,
-    pub cwd: *const ::std::os::raw::c_char,
+    pub cwd: *mut ::std::os::raw::c_char,
     pub pid: pid_t,
     pub tty: [::std::os::raw::c_char; 32usize],
     pub status: ::std::os::raw::c_int,
     pub fd: ::std::os::raw::c_int,
     pub event: *mut bufferevent,
+    pub disabled: u_int,
     pub resize_timer: event,
     pub ictx: *mut input_ctx,
-    pub colgc: grid_cell,
+    pub style: style,
     pub palette: *mut ::std::os::raw::c_int,
     pub pipe_fd: ::std::os::raw::c_int,
     pub pipe_event: *mut bufferevent,
@@ -12844,20 +13336,18 @@ pub struct window_pane {
     pub saved_cy: u_int,
     pub saved_grid: *mut grid,
     pub saved_cell: grid_cell,
-    pub mode: *const window_mode,
-    pub modedata: *mut ::std::os::raw::c_void,
+    pub modes: window_pane__bindgen_ty_1,
     pub modetimer: event,
     pub modelast: time_t,
-    pub modeprefix: u_int,
     pub searchstr: *mut ::std::os::raw::c_char,
-    pub entry: window_pane__bindgen_ty_1,
-    pub tree_entry: window_pane__bindgen_ty_2,
+    pub entry: window_pane__bindgen_ty_2,
+    pub tree_entry: window_pane__bindgen_ty_3,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct window_pane__bindgen_ty_1 {
-    pub tqe_next: *mut window_pane,
-    pub tqe_prev: *mut *mut window_pane,
+    pub tqh_first: *mut window_mode_entry,
+    pub tqh_last: *mut *mut window_mode_entry,
 }
 #[test]
 fn bindgen_test_layout_window_pane__bindgen_ty_1() {
@@ -12873,42 +13363,40 @@ fn bindgen_test_layout_window_pane__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<window_pane__bindgen_ty_1>())).tqe_next as *const _ as usize
+            &(*(::std::ptr::null::<window_pane__bindgen_ty_1>())).tqh_first as *const _ as usize
         },
         0usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane__bindgen_ty_1),
             "::",
-            stringify!(tqe_next)
+            stringify!(tqh_first)
         )
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<window_pane__bindgen_ty_1>())).tqe_prev as *const _ as usize
+            &(*(::std::ptr::null::<window_pane__bindgen_ty_1>())).tqh_last as *const _ as usize
         },
         8usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane__bindgen_ty_1),
             "::",
-            stringify!(tqe_prev)
+            stringify!(tqh_last)
         )
     );
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct window_pane__bindgen_ty_2 {
-    pub rbe_left: *mut window_pane,
-    pub rbe_right: *mut window_pane,
-    pub rbe_parent: *mut window_pane,
-    pub rbe_color: ::std::os::raw::c_int,
+    pub tqe_next: *mut window_pane,
+    pub tqe_prev: *mut *mut window_pane,
 }
 #[test]
 fn bindgen_test_layout_window_pane__bindgen_ty_2() {
     assert_eq!(
         ::std::mem::size_of::<window_pane__bindgen_ty_2>(),
-        32usize,
+        16usize,
         concat!("Size of: ", stringify!(window_pane__bindgen_ty_2))
     );
     assert_eq!(
@@ -12918,48 +13406,93 @@ fn bindgen_test_layout_window_pane__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<window_pane__bindgen_ty_2>())).rbe_left as *const _ as usize
+            &(*(::std::ptr::null::<window_pane__bindgen_ty_2>())).tqe_next as *const _ as usize
         },
         0usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane__bindgen_ty_2),
             "::",
-            stringify!(rbe_left)
+            stringify!(tqe_next)
         )
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<window_pane__bindgen_ty_2>())).rbe_right as *const _ as usize
+            &(*(::std::ptr::null::<window_pane__bindgen_ty_2>())).tqe_prev as *const _ as usize
         },
         8usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane__bindgen_ty_2),
             "::",
+            stringify!(tqe_prev)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct window_pane__bindgen_ty_3 {
+    pub rbe_left: *mut window_pane,
+    pub rbe_right: *mut window_pane,
+    pub rbe_parent: *mut window_pane,
+    pub rbe_color: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_window_pane__bindgen_ty_3() {
+    assert_eq!(
+        ::std::mem::size_of::<window_pane__bindgen_ty_3>(),
+        32usize,
+        concat!("Size of: ", stringify!(window_pane__bindgen_ty_3))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<window_pane__bindgen_ty_3>(),
+        8usize,
+        concat!("Alignment of ", stringify!(window_pane__bindgen_ty_3))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<window_pane__bindgen_ty_3>())).rbe_left as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(window_pane__bindgen_ty_3),
+            "::",
+            stringify!(rbe_left)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<window_pane__bindgen_ty_3>())).rbe_right as *const _ as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(window_pane__bindgen_ty_3),
+            "::",
             stringify!(rbe_right)
         )
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<window_pane__bindgen_ty_2>())).rbe_parent as *const _ as usize
+            &(*(::std::ptr::null::<window_pane__bindgen_ty_3>())).rbe_parent as *const _ as usize
         },
         16usize,
         concat!(
             "Offset of field: ",
-            stringify!(window_pane__bindgen_ty_2),
+            stringify!(window_pane__bindgen_ty_3),
             "::",
             stringify!(rbe_parent)
         )
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<window_pane__bindgen_ty_2>())).rbe_color as *const _ as usize
+            &(*(::std::ptr::null::<window_pane__bindgen_ty_3>())).rbe_color as *const _ as usize
         },
         24usize,
         concat!(
             "Offset of field: ",
-            stringify!(window_pane__bindgen_ty_2),
+            stringify!(window_pane__bindgen_ty_3),
             "::",
             stringify!(rbe_color)
         )
@@ -12969,7 +13502,7 @@ fn bindgen_test_layout_window_pane__bindgen_ty_2() {
 fn bindgen_test_layout_window_pane() {
     assert_eq!(
         ::std::mem::size_of::<window_pane>(),
-        800usize,
+        816usize,
         concat!("Size of: ", stringify!(window_pane))
     );
     assert_eq!(
@@ -13188,8 +13721,18 @@ fn bindgen_test_layout_window_pane() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<window_pane>())).resize_timer as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<window_pane>())).disabled as *const _ as usize },
         144usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(window_pane),
+            "::",
+            stringify!(disabled)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<window_pane>())).resize_timer as *const _ as usize },
+        152usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13199,7 +13742,7 @@ fn bindgen_test_layout_window_pane() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).ictx as *const _ as usize },
-        272usize,
+        280usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13208,18 +13751,18 @@ fn bindgen_test_layout_window_pane() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<window_pane>())).colgc as *const _ as usize },
-        280usize,
+        unsafe { &(*(::std::ptr::null::<window_pane>())).style as *const _ as usize },
+        288usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
             "::",
-            stringify!(colgc)
+            stringify!(style)
         )
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).palette as *const _ as usize },
-        320usize,
+        344usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13229,7 +13772,7 @@ fn bindgen_test_layout_window_pane() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).pipe_fd as *const _ as usize },
-        328usize,
+        352usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13239,7 +13782,7 @@ fn bindgen_test_layout_window_pane() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).pipe_event as *const _ as usize },
-        336usize,
+        360usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13249,7 +13792,7 @@ fn bindgen_test_layout_window_pane() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).pipe_off as *const _ as usize },
-        344usize,
+        368usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13259,7 +13802,7 @@ fn bindgen_test_layout_window_pane() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).screen as *const _ as usize },
-        352usize,
+        376usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13269,7 +13812,7 @@ fn bindgen_test_layout_window_pane() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).base as *const _ as usize },
-        360usize,
+        384usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13279,7 +13822,7 @@ fn bindgen_test_layout_window_pane() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).status_screen as *const _ as usize },
-        440usize,
+        464usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13289,7 +13832,7 @@ fn bindgen_test_layout_window_pane() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).status_size as *const _ as usize },
-        520usize,
+        544usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13299,7 +13842,7 @@ fn bindgen_test_layout_window_pane() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).saved_cx as *const _ as usize },
-        528usize,
+        552usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13309,7 +13852,7 @@ fn bindgen_test_layout_window_pane() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).saved_cy as *const _ as usize },
-        532usize,
+        556usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13319,7 +13862,7 @@ fn bindgen_test_layout_window_pane() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).saved_grid as *const _ as usize },
-        536usize,
+        560usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13329,7 +13872,7 @@ fn bindgen_test_layout_window_pane() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).saved_cell as *const _ as usize },
-        544usize,
+        568usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13338,28 +13881,18 @@ fn bindgen_test_layout_window_pane() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<window_pane>())).mode as *const _ as usize },
-        584usize,
+        unsafe { &(*(::std::ptr::null::<window_pane>())).modes as *const _ as usize },
+        608usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
             "::",
-            stringify!(mode)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<window_pane>())).modedata as *const _ as usize },
-        592usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(window_pane),
-            "::",
-            stringify!(modedata)
+            stringify!(modes)
         )
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).modetimer as *const _ as usize },
-        600usize,
+        624usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13369,7 +13902,7 @@ fn bindgen_test_layout_window_pane() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).modelast as *const _ as usize },
-        728usize,
+        752usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13378,18 +13911,8 @@ fn bindgen_test_layout_window_pane() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<window_pane>())).modeprefix as *const _ as usize },
-        736usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(window_pane),
-            "::",
-            stringify!(modeprefix)
-        )
-    );
-    assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).searchstr as *const _ as usize },
-        744usize,
+        760usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13399,7 +13922,7 @@ fn bindgen_test_layout_window_pane() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).entry as *const _ as usize },
-        752usize,
+        768usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13409,7 +13932,7 @@ fn bindgen_test_layout_window_pane() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window_pane>())).tree_entry as *const _ as usize },
-        768usize,
+        784usize,
         concat!(
             "Offset of field: ",
             stringify!(window_pane),
@@ -13508,8 +14031,8 @@ pub struct window {
     pub alerts_queued: ::std::os::raw::c_int,
     pub alerts_entry: window__bindgen_ty_1,
     pub options: *mut options,
-    pub style: grid_cell,
-    pub active_style: grid_cell,
+    pub style: style,
+    pub active_style: style,
     pub references: u_int,
     pub winlinks: window__bindgen_ty_2,
     pub entry: window__bindgen_ty_3,
@@ -13657,7 +14180,7 @@ fn bindgen_test_layout_window__bindgen_ty_3() {
 fn bindgen_test_layout_window() {
     assert_eq!(
         ::std::mem::size_of::<window>(),
-        664usize,
+        696usize,
         concat!("Size of: ", stringify!(window))
     );
     assert_eq!(
@@ -13877,7 +14400,7 @@ fn bindgen_test_layout_window() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window>())).active_style as *const _ as usize },
-        572usize,
+        588usize,
         concat!(
             "Offset of field: ",
             stringify!(window),
@@ -13887,7 +14410,7 @@ fn bindgen_test_layout_window() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window>())).references as *const _ as usize },
-        608usize,
+        640usize,
         concat!(
             "Offset of field: ",
             stringify!(window),
@@ -13897,7 +14420,7 @@ fn bindgen_test_layout_window() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window>())).winlinks as *const _ as usize },
-        616usize,
+        648usize,
         concat!(
             "Offset of field: ",
             stringify!(window),
@@ -13907,7 +14430,7 @@ fn bindgen_test_layout_window() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<window>())).entry as *const _ as usize },
-        632usize,
+        664usize,
         concat!(
             "Offset of field: ",
             stringify!(window),
@@ -13950,9 +14473,6 @@ pub struct winlink {
     pub idx: ::std::os::raw::c_int,
     pub session: *mut session,
     pub window: *mut window,
-    pub status_width: usize,
-    pub status_cell: grid_cell,
-    pub status_text: *mut ::std::os::raw::c_char,
     pub flags: ::std::os::raw::c_int,
     pub entry: winlink__bindgen_ty_1,
     pub wentry: winlink__bindgen_ty_2,
@@ -14103,7 +14623,7 @@ fn bindgen_test_layout_winlink__bindgen_ty_3() {
 fn bindgen_test_layout_winlink() {
     assert_eq!(
         ::std::mem::size_of::<winlink>(),
-        152usize,
+        96usize,
         concat!("Size of: ", stringify!(winlink))
     );
     assert_eq!(
@@ -14142,38 +14662,8 @@ fn bindgen_test_layout_winlink() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<winlink>())).status_width as *const _ as usize },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(winlink),
-            "::",
-            stringify!(status_width)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<winlink>())).status_cell as *const _ as usize },
-        32usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(winlink),
-            "::",
-            stringify!(status_cell)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<winlink>())).status_text as *const _ as usize },
-        72usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(winlink),
-            "::",
-            stringify!(status_text)
-        )
-    );
-    assert_eq!(
         unsafe { &(*(::std::ptr::null::<winlink>())).flags as *const _ as usize },
-        80usize,
+        24usize,
         concat!(
             "Offset of field: ",
             stringify!(winlink),
@@ -14183,7 +14673,7 @@ fn bindgen_test_layout_winlink() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<winlink>())).entry as *const _ as usize },
-        88usize,
+        32usize,
         concat!(
             "Offset of field: ",
             stringify!(winlink),
@@ -14193,7 +14683,7 @@ fn bindgen_test_layout_winlink() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<winlink>())).wentry as *const _ as usize },
-        120usize,
+        64usize,
         concat!(
             "Offset of field: ",
             stringify!(winlink),
@@ -14203,7 +14693,7 @@ fn bindgen_test_layout_winlink() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<winlink>())).sentry as *const _ as usize },
-        136usize,
+        80usize,
         concat!(
             "Offset of field: ",
             stringify!(winlink),
@@ -14805,6 +15295,7 @@ pub struct session {
     pub lastw: winlink_stack,
     pub windows: winlinks,
     pub statusat: ::std::os::raw::c_int,
+    pub statuslines: u_int,
     pub hooks: *mut hooks,
     pub options: *mut options,
     pub flags: ::std::os::raw::c_int,
@@ -15050,6 +15541,16 @@ fn bindgen_test_layout_session() {
         )
     );
     assert_eq!(
+        unsafe { &(*(::std::ptr::null::<session>())).statuslines as *const _ as usize },
+        252usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(session),
+            "::",
+            stringify!(statuslines)
+        )
+    );
+    assert_eq!(
         unsafe { &(*(::std::ptr::null::<session>())).hooks as *const _ as usize },
         256usize,
         concat!(
@@ -15174,6 +15675,7 @@ pub struct mouse_event {
     pub valid: ::std::os::raw::c_int,
     pub key: key_code,
     pub statusat: ::std::os::raw::c_int,
+    pub statuslines: u_int,
     pub x: u_int,
     pub y: u_int,
     pub b: u_int,
@@ -15192,7 +15694,7 @@ pub struct mouse_event {
 fn bindgen_test_layout_mouse_event() {
     assert_eq!(
         ::std::mem::size_of::<mouse_event>(),
-        72usize,
+        80usize,
         concat!("Size of: ", stringify!(mouse_event))
     );
     assert_eq!(
@@ -15231,8 +15733,18 @@ fn bindgen_test_layout_mouse_event() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<mouse_event>())).x as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<mouse_event>())).statuslines as *const _ as usize },
         20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(mouse_event),
+            "::",
+            stringify!(statuslines)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<mouse_event>())).x as *const _ as usize },
+        24usize,
         concat!(
             "Offset of field: ",
             stringify!(mouse_event),
@@ -15242,7 +15754,7 @@ fn bindgen_test_layout_mouse_event() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<mouse_event>())).y as *const _ as usize },
-        24usize,
+        28usize,
         concat!(
             "Offset of field: ",
             stringify!(mouse_event),
@@ -15252,7 +15764,7 @@ fn bindgen_test_layout_mouse_event() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<mouse_event>())).b as *const _ as usize },
-        28usize,
+        32usize,
         concat!(
             "Offset of field: ",
             stringify!(mouse_event),
@@ -15262,7 +15774,7 @@ fn bindgen_test_layout_mouse_event() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<mouse_event>())).lx as *const _ as usize },
-        32usize,
+        36usize,
         concat!(
             "Offset of field: ",
             stringify!(mouse_event),
@@ -15272,7 +15784,7 @@ fn bindgen_test_layout_mouse_event() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<mouse_event>())).ly as *const _ as usize },
-        36usize,
+        40usize,
         concat!(
             "Offset of field: ",
             stringify!(mouse_event),
@@ -15282,7 +15794,7 @@ fn bindgen_test_layout_mouse_event() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<mouse_event>())).lb as *const _ as usize },
-        40usize,
+        44usize,
         concat!(
             "Offset of field: ",
             stringify!(mouse_event),
@@ -15292,7 +15804,7 @@ fn bindgen_test_layout_mouse_event() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<mouse_event>())).ox as *const _ as usize },
-        44usize,
+        48usize,
         concat!(
             "Offset of field: ",
             stringify!(mouse_event),
@@ -15302,7 +15814,7 @@ fn bindgen_test_layout_mouse_event() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<mouse_event>())).oy as *const _ as usize },
-        48usize,
+        52usize,
         concat!(
             "Offset of field: ",
             stringify!(mouse_event),
@@ -15312,7 +15824,7 @@ fn bindgen_test_layout_mouse_event() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<mouse_event>())).s as *const _ as usize },
-        52usize,
+        56usize,
         concat!(
             "Offset of field: ",
             stringify!(mouse_event),
@@ -15322,7 +15834,7 @@ fn bindgen_test_layout_mouse_event() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<mouse_event>())).w as *const _ as usize },
-        56usize,
+        60usize,
         concat!(
             "Offset of field: ",
             stringify!(mouse_event),
@@ -15332,7 +15844,7 @@ fn bindgen_test_layout_mouse_event() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<mouse_event>())).wp as *const _ as usize },
-        60usize,
+        64usize,
         concat!(
             "Offset of field: ",
             stringify!(mouse_event),
@@ -15342,7 +15854,7 @@ fn bindgen_test_layout_mouse_event() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<mouse_event>())).sgr_type as *const _ as usize },
-        64usize,
+        68usize,
         concat!(
             "Offset of field: ",
             stringify!(mouse_event),
@@ -15352,7 +15864,7 @@ fn bindgen_test_layout_mouse_event() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<mouse_event>())).sgr_b as *const _ as usize },
-        68usize,
+        72usize,
         concat!(
             "Offset of field: ",
             stringify!(mouse_event),
@@ -15645,7 +16157,7 @@ pub type tty__bindgen_ty_1 = u32;
 fn bindgen_test_layout_tty() {
     assert_eq!(
         ::std::mem::size_of::<tty>(),
-        896usize,
+        904usize,
         concat!("Size of: ", stringify!(tty))
     );
     assert_eq!(
@@ -15920,7 +16432,7 @@ fn bindgen_test_layout_tty() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<tty>())).mouse_drag_flag as *const _ as usize },
-        736usize,
+        744usize,
         concat!(
             "Offset of field: ",
             stringify!(tty),
@@ -15930,7 +16442,7 @@ fn bindgen_test_layout_tty() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<tty>())).mouse_drag_update as *const _ as usize },
-        744usize,
+        752usize,
         concat!(
             "Offset of field: ",
             stringify!(tty),
@@ -15940,7 +16452,7 @@ fn bindgen_test_layout_tty() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<tty>())).mouse_drag_release as *const _ as usize },
-        752usize,
+        760usize,
         concat!(
             "Offset of field: ",
             stringify!(tty),
@@ -15950,7 +16462,7 @@ fn bindgen_test_layout_tty() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<tty>())).key_timer as *const _ as usize },
-        760usize,
+        768usize,
         concat!(
             "Offset of field: ",
             stringify!(tty),
@@ -15960,7 +16472,7 @@ fn bindgen_test_layout_tty() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<tty>())).key_tree as *const _ as usize },
-        888usize,
+        896usize,
         concat!(
             "Offset of field: ",
             stringify!(tty),
@@ -16666,7 +17178,7 @@ pub struct cmdq_shared {
 fn bindgen_test_layout_cmdq_shared() {
     assert_eq!(
         ::std::mem::size_of::<cmdq_shared>(),
-        144usize,
+        152usize,
         concat!("Size of: ", stringify!(cmdq_shared))
     );
     assert_eq!(
@@ -16716,7 +17228,7 @@ fn bindgen_test_layout_cmdq_shared() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<cmdq_shared>())).current as *const _ as usize },
-        88usize,
+        96usize,
         concat!(
             "Offset of field: ",
             stringify!(cmdq_shared),
@@ -17224,20 +17736,59 @@ fn bindgen_test_layout_cmd_entry() {
     );
 }
 #[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct status_line_entry {
+    pub expanded: *mut ::std::os::raw::c_char,
+    pub ranges: style_ranges,
+}
+#[test]
+fn bindgen_test_layout_status_line_entry() {
+    assert_eq!(
+        ::std::mem::size_of::<status_line_entry>(),
+        24usize,
+        concat!("Size of: ", stringify!(status_line_entry))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<status_line_entry>(),
+        8usize,
+        concat!("Alignment of ", stringify!(status_line_entry))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<status_line_entry>())).expanded as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(status_line_entry),
+            "::",
+            stringify!(expanded)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<status_line_entry>())).ranges as *const _ as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(status_line_entry),
+            "::",
+            stringify!(ranges)
+        )
+    );
+}
+#[repr(C)]
 #[derive(Copy, Clone)]
 pub struct status_line {
     pub timer: event,
-    pub status: screen,
-    pub old_status: *mut screen,
-    pub window_list_offset: ::std::os::raw::c_int,
-    pub left_size: u_int,
-    pub right_size: u_int,
+    pub screen: screen,
+    pub active: *mut screen,
+    pub references: ::std::os::raw::c_int,
+    pub style: grid_cell,
+    pub entries: [status_line_entry; 5usize],
 }
 #[test]
 fn bindgen_test_layout_status_line() {
     assert_eq!(
         ::std::mem::size_of::<status_line>(),
-        232usize,
+        376usize,
         concat!("Size of: ", stringify!(status_line))
     );
     assert_eq!(
@@ -17256,53 +17807,53 @@ fn bindgen_test_layout_status_line() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<status_line>())).status as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<status_line>())).screen as *const _ as usize },
         128usize,
         concat!(
             "Offset of field: ",
             stringify!(status_line),
             "::",
-            stringify!(status)
+            stringify!(screen)
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<status_line>())).old_status as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<status_line>())).active as *const _ as usize },
         208usize,
         concat!(
             "Offset of field: ",
             stringify!(status_line),
             "::",
-            stringify!(old_status)
+            stringify!(active)
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<status_line>())).window_list_offset as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<status_line>())).references as *const _ as usize },
         216usize,
         concat!(
             "Offset of field: ",
             stringify!(status_line),
             "::",
-            stringify!(window_list_offset)
+            stringify!(references)
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<status_line>())).left_size as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<status_line>())).style as *const _ as usize },
         220usize,
         concat!(
             "Offset of field: ",
             stringify!(status_line),
             "::",
-            stringify!(left_size)
+            stringify!(style)
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<status_line>())).right_size as *const _ as usize },
-        224usize,
+        unsafe { &(*(::std::ptr::null::<status_line>())).entries as *const _ as usize },
+        256usize,
         concat!(
             "Offset of field: ",
             stringify!(status_line),
             "::",
-            stringify!(right_size)
+            stringify!(entries)
         )
     );
 }
@@ -17377,7 +17928,6 @@ pub struct client {
     pub prompt_flags: ::std::os::raw::c_int,
     pub session: *mut session,
     pub last_session: *mut session,
-    pub wlmouse: ::std::os::raw::c_int,
     pub references: ::std::os::raw::c_int,
     pub pan_window: *mut ::std::os::raw::c_void,
     pub pan_ox: u_int,
@@ -17469,7 +18019,7 @@ fn bindgen_test_layout_client__bindgen_ty_3() {
 fn bindgen_test_layout_client() {
     assert_eq!(
         ::std::mem::size_of::<client>(),
-        2176usize,
+        2328usize,
         concat!("Size of: ", stringify!(client))
     );
     assert_eq!(
@@ -17639,7 +18189,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).written as *const _ as usize },
-        1152usize,
+        1160usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17649,7 +18199,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).discarded as *const _ as usize },
-        1160usize,
+        1168usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17659,7 +18209,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).redraw as *const _ as usize },
-        1168usize,
+        1176usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17669,7 +18219,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).stdin_callback as *const _ as usize },
-        1176usize,
+        1184usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17679,7 +18229,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).stdin_callback_data as *const _ as usize },
-        1184usize,
+        1192usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17689,7 +18239,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).stdin_data as *const _ as usize },
-        1192usize,
+        1200usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17699,7 +18249,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).stdin_closed as *const _ as usize },
-        1200usize,
+        1208usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17709,7 +18259,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).stdout_data as *const _ as usize },
-        1208usize,
+        1216usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17719,7 +18269,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).stderr_data as *const _ as usize },
-        1216usize,
+        1224usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17729,7 +18279,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).repeat_timer as *const _ as usize },
-        1224usize,
+        1232usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17739,7 +18289,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).click_timer as *const _ as usize },
-        1352usize,
+        1360usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17749,7 +18299,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).click_button as *const _ as usize },
-        1480usize,
+        1488usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17759,7 +18309,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).status as *const _ as usize },
-        1488usize,
+        1496usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17769,7 +18319,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).flags as *const _ as usize },
-        1720usize,
+        1872usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17779,7 +18329,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).keytable as *const _ as usize },
-        1728usize,
+        1880usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17789,7 +18339,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).identify_timer as *const _ as usize },
-        1736usize,
+        1888usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17799,7 +18349,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).identify_callback as *const _ as usize },
-        1864usize,
+        2016usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17809,7 +18359,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).identify_callback_data as *const _ as usize },
-        1872usize,
+        2024usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17819,7 +18369,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).identify_callback_item as *const _ as usize },
-        1880usize,
+        2032usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17829,7 +18379,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).message_string as *const _ as usize },
-        1888usize,
+        2040usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17839,7 +18389,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).message_timer as *const _ as usize },
-        1896usize,
+        2048usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17849,7 +18399,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).message_next as *const _ as usize },
-        2024usize,
+        2176usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17859,7 +18409,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).message_log as *const _ as usize },
-        2032usize,
+        2184usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17869,7 +18419,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).prompt_string as *const _ as usize },
-        2048usize,
+        2200usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17879,7 +18429,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).prompt_buffer as *const _ as usize },
-        2056usize,
+        2208usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17889,7 +18439,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).prompt_index as *const _ as usize },
-        2064usize,
+        2216usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17899,7 +18449,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).prompt_inputcb as *const _ as usize },
-        2072usize,
+        2224usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17909,7 +18459,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).prompt_freecb as *const _ as usize },
-        2080usize,
+        2232usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17919,7 +18469,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).prompt_data as *const _ as usize },
-        2088usize,
+        2240usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17929,7 +18479,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).prompt_hindex as *const _ as usize },
-        2096usize,
+        2248usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17939,7 +18489,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).prompt_mode as *const _ as usize },
-        2100usize,
+        2252usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17949,7 +18499,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).prompt_saved as *const _ as usize },
-        2104usize,
+        2256usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17959,7 +18509,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).prompt_flags as *const _ as usize },
-        2112usize,
+        2264usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17969,7 +18519,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).session as *const _ as usize },
-        2120usize,
+        2272usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17979,7 +18529,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).last_session as *const _ as usize },
-        2128usize,
+        2280usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -17988,18 +18538,8 @@ fn bindgen_test_layout_client() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<client>())).wlmouse as *const _ as usize },
-        2136usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(client),
-            "::",
-            stringify!(wlmouse)
-        )
-    );
-    assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).references as *const _ as usize },
-        2140usize,
+        2288usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -18009,7 +18549,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).pan_window as *const _ as usize },
-        2144usize,
+        2296usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -18019,7 +18559,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).pan_ox as *const _ as usize },
-        2152usize,
+        2304usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -18029,7 +18569,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).pan_oy as *const _ as usize },
-        2156usize,
+        2308usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -18039,7 +18579,7 @@ fn bindgen_test_layout_client() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<client>())).entry as *const _ as usize },
-        2160usize,
+        2312usize,
         concat!(
             "Offset of field: ",
             stringify!(client),
@@ -18403,15 +18943,103 @@ fn bindgen_test_layout_key_tables() {
         )
     );
 }
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct options_array {
+    pub rbh_root: *mut options_array_item,
+}
+#[test]
+fn bindgen_test_layout_options_array() {
+    assert_eq!(
+        ::std::mem::size_of::<options_array>(),
+        8usize,
+        concat!("Size of: ", stringify!(options_array))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<options_array>(),
+        8usize,
+        concat!("Alignment of ", stringify!(options_array))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<options_array>())).rbh_root as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(options_array),
+            "::",
+            stringify!(rbh_root)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union options_value {
+    pub string: *mut ::std::os::raw::c_char,
+    pub number: ::std::os::raw::c_longlong,
+    pub style: style,
+    pub array: options_array,
+    _bindgen_union_align: [u64; 7usize],
+}
+#[test]
+fn bindgen_test_layout_options_value() {
+    assert_eq!(
+        ::std::mem::size_of::<options_value>(),
+        56usize,
+        concat!("Size of: ", stringify!(options_value))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<options_value>(),
+        8usize,
+        concat!("Alignment of ", stringify!(options_value))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<options_value>())).string as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(options_value),
+            "::",
+            stringify!(string)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<options_value>())).number as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(options_value),
+            "::",
+            stringify!(number)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<options_value>())).style as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(options_value),
+            "::",
+            stringify!(style)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<options_value>())).array as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(options_value),
+            "::",
+            stringify!(array)
+        )
+    );
+}
 pub const options_table_type_OPTIONS_TABLE_STRING: options_table_type = 0;
 pub const options_table_type_OPTIONS_TABLE_NUMBER: options_table_type = 1;
 pub const options_table_type_OPTIONS_TABLE_KEY: options_table_type = 2;
 pub const options_table_type_OPTIONS_TABLE_COLOUR: options_table_type = 3;
-pub const options_table_type_OPTIONS_TABLE_ATTRIBUTES: options_table_type = 4;
-pub const options_table_type_OPTIONS_TABLE_FLAG: options_table_type = 5;
-pub const options_table_type_OPTIONS_TABLE_CHOICE: options_table_type = 6;
-pub const options_table_type_OPTIONS_TABLE_STYLE: options_table_type = 7;
-pub const options_table_type_OPTIONS_TABLE_ARRAY: options_table_type = 8;
+pub const options_table_type_OPTIONS_TABLE_FLAG: options_table_type = 4;
+pub const options_table_type_OPTIONS_TABLE_CHOICE: options_table_type = 5;
+pub const options_table_type_OPTIONS_TABLE_STYLE: options_table_type = 6;
 pub type options_table_type = u32;
 pub const options_table_scope_OPTIONS_TABLE_NONE: options_table_scope = 0;
 pub const options_table_scope_OPTIONS_TABLE_SERVER: options_table_scope = 1;
@@ -18424,20 +19052,21 @@ pub struct options_table_entry {
     pub name: *const ::std::os::raw::c_char,
     pub type_: options_table_type,
     pub scope: options_table_scope,
+    pub flags: ::std::os::raw::c_int,
     pub minimum: u_int,
     pub maximum: u_int,
     pub choices: *mut *const ::std::os::raw::c_char,
     pub default_str: *const ::std::os::raw::c_char,
     pub default_num: ::std::os::raw::c_longlong,
+    pub default_arr: *mut *const ::std::os::raw::c_char,
     pub separator: *const ::std::os::raw::c_char,
-    pub style: *const ::std::os::raw::c_char,
     pub pattern: *const ::std::os::raw::c_char,
 }
 #[test]
 fn bindgen_test_layout_options_table_entry() {
     assert_eq!(
         ::std::mem::size_of::<options_table_entry>(),
-        72usize,
+        80usize,
         concat!("Size of: ", stringify!(options_table_entry))
     );
     assert_eq!(
@@ -18476,8 +19105,18 @@ fn bindgen_test_layout_options_table_entry() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<options_table_entry>())).minimum as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<options_table_entry>())).flags as *const _ as usize },
         16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(options_table_entry),
+            "::",
+            stringify!(flags)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<options_table_entry>())).minimum as *const _ as usize },
+        20usize,
         concat!(
             "Offset of field: ",
             stringify!(options_table_entry),
@@ -18487,7 +19126,7 @@ fn bindgen_test_layout_options_table_entry() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<options_table_entry>())).maximum as *const _ as usize },
-        20usize,
+        24usize,
         concat!(
             "Offset of field: ",
             stringify!(options_table_entry),
@@ -18497,7 +19136,7 @@ fn bindgen_test_layout_options_table_entry() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<options_table_entry>())).choices as *const _ as usize },
-        24usize,
+        32usize,
         concat!(
             "Offset of field: ",
             stringify!(options_table_entry),
@@ -18507,7 +19146,7 @@ fn bindgen_test_layout_options_table_entry() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<options_table_entry>())).default_str as *const _ as usize },
-        32usize,
+        40usize,
         concat!(
             "Offset of field: ",
             stringify!(options_table_entry),
@@ -18517,7 +19156,7 @@ fn bindgen_test_layout_options_table_entry() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<options_table_entry>())).default_num as *const _ as usize },
-        40usize,
+        48usize,
         concat!(
             "Offset of field: ",
             stringify!(options_table_entry),
@@ -18526,8 +19165,18 @@ fn bindgen_test_layout_options_table_entry() {
         )
     );
     assert_eq!(
+        unsafe { &(*(::std::ptr::null::<options_table_entry>())).default_arr as *const _ as usize },
+        56usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(options_table_entry),
+            "::",
+            stringify!(default_arr)
+        )
+    );
+    assert_eq!(
         unsafe { &(*(::std::ptr::null::<options_table_entry>())).separator as *const _ as usize },
-        48usize,
+        64usize,
         concat!(
             "Offset of field: ",
             stringify!(options_table_entry),
@@ -18536,23 +19185,151 @@ fn bindgen_test_layout_options_table_entry() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<options_table_entry>())).style as *const _ as usize },
-        56usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(options_table_entry),
-            "::",
-            stringify!(style)
-        )
-    );
-    assert_eq!(
         unsafe { &(*(::std::ptr::null::<options_table_entry>())).pattern as *const _ as usize },
-        64usize,
+        72usize,
         concat!(
             "Offset of field: ",
             stringify!(options_table_entry),
             "::",
             stringify!(pattern)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct spawn_context {
+    pub item: *mut cmdq_item,
+    pub s: *mut session,
+    pub wl: *mut winlink,
+    pub wp0: *mut window_pane,
+    pub lc: *mut layout_cell,
+    pub name: *const ::std::os::raw::c_char,
+    pub argv: *mut *mut ::std::os::raw::c_char,
+    pub argc: ::std::os::raw::c_int,
+    pub idx: ::std::os::raw::c_int,
+    pub cwd: *const ::std::os::raw::c_char,
+    pub flags: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_spawn_context() {
+    assert_eq!(
+        ::std::mem::size_of::<spawn_context>(),
+        80usize,
+        concat!("Size of: ", stringify!(spawn_context))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<spawn_context>(),
+        8usize,
+        concat!("Alignment of ", stringify!(spawn_context))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<spawn_context>())).item as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(spawn_context),
+            "::",
+            stringify!(item)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<spawn_context>())).s as *const _ as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(spawn_context),
+            "::",
+            stringify!(s)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<spawn_context>())).wl as *const _ as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(spawn_context),
+            "::",
+            stringify!(wl)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<spawn_context>())).wp0 as *const _ as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(spawn_context),
+            "::",
+            stringify!(wp0)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<spawn_context>())).lc as *const _ as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(spawn_context),
+            "::",
+            stringify!(lc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<spawn_context>())).name as *const _ as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(spawn_context),
+            "::",
+            stringify!(name)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<spawn_context>())).argv as *const _ as usize },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(spawn_context),
+            "::",
+            stringify!(argv)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<spawn_context>())).argc as *const _ as usize },
+        56usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(spawn_context),
+            "::",
+            stringify!(argc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<spawn_context>())).idx as *const _ as usize },
+        60usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(spawn_context),
+            "::",
+            stringify!(idx)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<spawn_context>())).cwd as *const _ as usize },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(spawn_context),
+            "::",
+            stringify!(cwd)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<spawn_context>())).flags as *const _ as usize },
+        72usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(spawn_context),
+            "::",
+            stringify!(flags)
         )
     );
 }
@@ -18597,6 +19374,9 @@ extern "C" {
 }
 extern "C" {
     pub fn setblocking(arg1: ::std::os::raw::c_int, arg2: ::std::os::raw::c_int);
+}
+extern "C" {
+    pub fn find_cwd() -> *const ::std::os::raw::c_char;
 }
 extern "C" {
     pub fn find_home() -> *const ::std::os::raw::c_char;
@@ -18655,6 +19435,10 @@ extern "C" {
     pub static mut cfg_finished: ::std::os::raw::c_int;
 }
 extern "C" {
+    #[link_name = "\u{1}cfg_client"]
+    pub static mut cfg_client: *mut client;
+}
+extern "C" {
     pub fn start_cfg();
 }
 extern "C" {
@@ -18710,7 +19494,11 @@ extern "C" {
     pub fn paste_free(arg1: *mut paste_buffer);
 }
 extern "C" {
-    pub fn paste_add(arg1: *mut ::std::os::raw::c_char, arg2: usize);
+    pub fn paste_add(
+        arg1: *const ::std::os::raw::c_char,
+        arg2: *mut ::std::os::raw::c_char,
+        arg3: usize,
+    );
 }
 extern "C" {
     pub fn paste_rename(
@@ -18729,6 +19517,12 @@ extern "C" {
 }
 extern "C" {
     pub fn paste_make_sample(arg1: *mut paste_buffer) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn format_skip(
+        s: *const ::std::os::raw::c_char,
+        end: *const ::std::os::raw::c_char,
+    ) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
     pub fn format_true(arg1: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
@@ -18753,10 +19547,22 @@ extern "C" {
     );
 }
 extern "C" {
+    pub fn format_each(
+        arg1: *mut format_tree,
+        arg2: ::std::option::Option<
+            unsafe extern "C" fn(
+                arg1: *const ::std::os::raw::c_char,
+                arg2: *const ::std::os::raw::c_char,
+                arg3: *mut ::std::os::raw::c_void,
+            ),
+        >,
+        arg3: *mut ::std::os::raw::c_void,
+    );
+}
+extern "C" {
     pub fn format_expand_time(
         arg1: *mut format_tree,
         arg2: *const ::std::os::raw::c_char,
-        arg3: time_t,
     ) -> *mut ::std::os::raw::c_char;
 }
 extern "C" {
@@ -18795,6 +19601,30 @@ extern "C" {
 }
 extern "C" {
     pub fn format_lost_client(arg1: *mut client);
+}
+extern "C" {
+    pub fn format_draw(
+        arg1: *mut screen_write_ctx,
+        arg2: *const grid_cell,
+        arg3: u_int,
+        arg4: *const ::std::os::raw::c_char,
+        arg5: *mut style_ranges,
+    );
+}
+extern "C" {
+    pub fn format_width(arg1: *const ::std::os::raw::c_char) -> u_int;
+}
+extern "C" {
+    pub fn format_trim_left(
+        arg1: *const ::std::os::raw::c_char,
+        arg2: u_int,
+    ) -> *mut ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn format_trim_right(
+        arg1: *const ::std::os::raw::c_char,
+        arg2: u_int,
+    ) -> *mut ::std::os::raw::c_char;
 }
 pub type format_cb =
     ::std::option::Option<unsafe extern "C" fn(arg1: *mut format_tree, arg2: *mut format_entry)>;
@@ -18947,9 +19777,12 @@ pub struct format_tree {
     pub wl: *mut winlink,
     pub w: *mut window,
     pub wp: *mut window_pane,
+    pub item: *mut cmdq_item,
     pub client: *mut client,
     pub tag: u_int,
     pub flags: ::std::os::raw::c_int,
+    pub time: time_t,
+    pub loop_: u_int,
     pub tree: format_tree_format_entry_tree,
 }
 #[repr(C)]
@@ -18986,7 +19819,7 @@ fn bindgen_test_layout_format_tree_format_entry_tree() {
 fn bindgen_test_layout_format_tree() {
     assert_eq!(
         ::std::mem::size_of::<format_tree>(),
-        64usize,
+        88usize,
         concat!("Size of: ", stringify!(format_tree))
     );
     assert_eq!(
@@ -19045,8 +19878,18 @@ fn bindgen_test_layout_format_tree() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<format_tree>())).client as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<format_tree>())).item as *const _ as usize },
         40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(format_tree),
+            "::",
+            stringify!(item)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<format_tree>())).client as *const _ as usize },
+        48usize,
         concat!(
             "Offset of field: ",
             stringify!(format_tree),
@@ -19056,7 +19899,7 @@ fn bindgen_test_layout_format_tree() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<format_tree>())).tag as *const _ as usize },
-        48usize,
+        56usize,
         concat!(
             "Offset of field: ",
             stringify!(format_tree),
@@ -19066,7 +19909,7 @@ fn bindgen_test_layout_format_tree() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<format_tree>())).flags as *const _ as usize },
-        52usize,
+        60usize,
         concat!(
             "Offset of field: ",
             stringify!(format_tree),
@@ -19075,8 +19918,28 @@ fn bindgen_test_layout_format_tree() {
         )
     );
     assert_eq!(
+        unsafe { &(*(::std::ptr::null::<format_tree>())).time as *const _ as usize },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(format_tree),
+            "::",
+            stringify!(time)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<format_tree>())).loop_ as *const _ as usize },
+        72usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(format_tree),
+            "::",
+            stringify!(loop_)
+        )
+    );
+    assert_eq!(
         unsafe { &(*(::std::ptr::null::<format_tree>())).tree as *const _ as usize },
-        56usize,
+        80usize,
         concat!(
             "Offset of field: ",
             stringify!(format_tree),
@@ -19281,10 +20144,7 @@ extern "C" {
     pub fn options_array_clear(arg1: *mut options_entry);
 }
 extern "C" {
-    pub fn options_array_get(
-        arg1: *mut options_entry,
-        arg2: u_int,
-    ) -> *const ::std::os::raw::c_char;
+    pub fn options_array_get(arg1: *mut options_entry, arg2: u_int) -> *mut options_value;
 }
 extern "C" {
     pub fn options_array_set(
@@ -19295,10 +20155,22 @@ extern "C" {
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn options_array_size(arg1: *mut options_entry, arg2: *mut u_int) -> ::std::os::raw::c_int;
+    pub fn options_array_assign(arg1: *mut options_entry, arg2: *const ::std::os::raw::c_char);
 }
 extern "C" {
-    pub fn options_array_assign(arg1: *mut options_entry, arg2: *const ::std::os::raw::c_char);
+    pub fn options_array_first(arg1: *mut options_entry) -> *mut options_array_item;
+}
+extern "C" {
+    pub fn options_array_next(arg1: *mut options_array_item) -> *mut options_array_item;
+}
+extern "C" {
+    pub fn options_array_item_index(arg1: *mut options_array_item) -> u_int;
+}
+extern "C" {
+    pub fn options_array_item_value(arg1: *mut options_array_item) -> *mut options_value;
+}
+extern "C" {
+    pub fn options_isarray(arg1: *mut options_entry) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn options_isstring(arg1: *mut options_entry) -> ::std::os::raw::c_int;
@@ -19308,7 +20180,7 @@ extern "C" {
         arg1: *mut options_entry,
         arg2: ::std::os::raw::c_int,
         arg3: ::std::os::raw::c_int,
-    ) -> *const ::std::os::raw::c_char;
+    ) -> *mut ::std::os::raw::c_char;
 }
 extern "C" {
     pub fn options_parse(
@@ -19353,10 +20225,8 @@ extern "C" {
     ) -> ::std::os::raw::c_longlong;
 }
 extern "C" {
-    pub fn options_get_style(
-        arg1: *mut options,
-        arg2: *const ::std::os::raw::c_char,
-    ) -> *const grid_cell;
+    pub fn options_get_style(arg1: *mut options, arg2: *const ::std::os::raw::c_char)
+        -> *mut style;
 }
 extern "C" {
     pub fn options_set_string(
@@ -19390,12 +20260,6 @@ extern "C" {
         arg4: *mut *mut options,
         arg5: *mut *mut ::std::os::raw::c_char,
     ) -> options_table_scope;
-}
-extern "C" {
-    pub fn options_style_update_new(arg1: *mut options, arg2: *mut options_entry);
-}
-extern "C" {
-    pub fn options_style_update_old(arg1: *mut options, arg2: *mut options_entry);
 }
 extern "C" {
     #[link_name = "\u{1}options_table"]
@@ -19516,7 +20380,7 @@ extern "C" {
     pub fn tty_raw(arg1: *mut tty, arg2: *const ::std::os::raw::c_char);
 }
 extern "C" {
-    pub fn tty_attributes(arg1: *mut tty, arg2: *const grid_cell, arg3: *const window_pane);
+    pub fn tty_attributes(arg1: *mut tty, arg2: *const grid_cell, arg3: *mut window_pane);
 }
 extern "C" {
     pub fn tty_reset(arg1: *mut tty);
@@ -19606,7 +20470,7 @@ extern "C" {
 extern "C" {
     pub fn tty_draw_line(
         arg1: *mut tty,
-        arg2: *const window_pane,
+        arg2: *mut window_pane,
         arg3: *mut screen,
         arg4: u_int,
         arg5: u_int,
@@ -20356,7 +21220,7 @@ extern "C" {
     pub fn status_timer_start_all();
 }
 extern "C" {
-    pub fn status_update_saved(arg1: *mut session);
+    pub fn status_update_cache(arg1: *mut session);
 }
 extern "C" {
     pub fn status_at_line(arg1: *mut client) -> ::std::os::raw::c_int;
@@ -20365,7 +21229,13 @@ extern "C" {
     pub fn status_line_size(arg1: *mut client) -> u_int;
 }
 extern "C" {
-    pub fn status_get_window_at(arg1: *mut client, arg2: u_int) -> *mut window;
+    pub fn status_get_range(arg1: *mut client, arg2: u_int, arg3: u_int) -> *mut style_range;
+}
+extern "C" {
+    pub fn status_init(arg1: *mut client);
+}
+extern "C" {
+    pub fn status_free(arg1: *mut client);
 }
 extern "C" {
     pub fn status_redraw(arg1: *mut client) -> ::std::os::raw::c_int;
@@ -20536,6 +21406,12 @@ extern "C" {
     );
 }
 extern "C" {
+    pub fn grid_get_line(arg1: *mut grid, arg2: u_int) -> *mut grid_line;
+}
+extern "C" {
+    pub fn grid_adjust_lines(arg1: *mut grid, arg2: u_int);
+}
+extern "C" {
     pub fn grid_clear(
         arg1: *mut grid,
         arg2: u_int,
@@ -20583,13 +21459,25 @@ extern "C" {
     );
 }
 extern "C" {
-    pub fn grid_reflow(arg1: *mut grid, arg2: u_int, arg3: *mut u_int);
+    pub fn grid_reflow(arg1: *mut grid, arg2: u_int);
 }
 extern "C" {
-    pub fn grid_get_line(arg1: *mut grid, arg2: u_int) -> *mut grid_line;
+    pub fn grid_wrap_position(
+        arg1: *mut grid,
+        arg2: u_int,
+        arg3: u_int,
+        arg4: *mut u_int,
+        arg5: *mut u_int,
+    );
 }
 extern "C" {
-    pub fn grid_adjust_lines(arg1: *mut grid, arg2: u_int);
+    pub fn grid_unwrap_position(
+        arg1: *mut grid,
+        arg2: *mut u_int,
+        arg3: *mut u_int,
+        arg4: u_int,
+        arg5: u_int,
+    );
 }
 extern "C" {
     pub fn grid_view_get_cell(arg1: *mut grid, arg2: u_int, arg3: u_int, arg4: *mut grid_cell);
@@ -20688,18 +21576,6 @@ extern "C" {
 }
 extern "C" {
     pub fn screen_write_reset(arg1: *mut screen_write_ctx);
-}
-extern "C" {
-    pub fn screen_write_cstrlen(arg1: *const ::std::os::raw::c_char, ...) -> usize;
-}
-extern "C" {
-    pub fn screen_write_cnputs(
-        arg1: *mut screen_write_ctx,
-        arg2: isize,
-        arg3: *const grid_cell,
-        arg4: *const ::std::os::raw::c_char,
-        ...
-    );
 }
 extern "C" {
     pub fn screen_write_strlen(arg1: *const ::std::os::raw::c_char, ...) -> usize;
@@ -20831,7 +21707,12 @@ extern "C" {
     pub fn screen_write_clearstartofline(arg1: *mut screen_write_ctx, arg2: u_int);
 }
 extern "C" {
-    pub fn screen_write_cursormove(arg1: *mut screen_write_ctx, arg2: u_int, arg3: u_int);
+    pub fn screen_write_cursormove(
+        arg1: *mut screen_write_ctx,
+        arg2: ::std::os::raw::c_int,
+        arg3: ::std::os::raw::c_int,
+        arg4: ::std::os::raw::c_int,
+    );
 }
 extern "C" {
     pub fn screen_write_reverseindex(arg1: *mut screen_write_ctx, arg2: u_int);
@@ -20950,6 +21831,10 @@ extern "C" {
 extern "C" {
     #[link_name = "\u{1}all_window_panes"]
     pub static mut all_window_panes: window_pane_tree;
+}
+extern "C" {
+    #[link_name = "\u{1}all_window_modes"]
+    pub static mut all_window_modes: [*const window_mode; 0usize];
 }
 extern "C" {
     pub fn window_cmp(arg1: *mut window, arg2: *mut window) -> ::std::os::raw::c_int;
@@ -21121,20 +22006,10 @@ extern "C" {
     pub fn window_create(arg1: u_int, arg2: u_int) -> *mut window;
 }
 extern "C" {
-    pub fn window_create_spawn(
-        arg1: *const ::std::os::raw::c_char,
-        arg2: ::std::os::raw::c_int,
-        arg3: *mut *mut ::std::os::raw::c_char,
-        arg4: *const ::std::os::raw::c_char,
-        arg5: *const ::std::os::raw::c_char,
-        arg6: *const ::std::os::raw::c_char,
-        arg7: *mut environ,
-        arg8: *mut termios,
-        arg9: u_int,
-        arg10: u_int,
-        arg11: u_int,
-        arg12: *mut *mut ::std::os::raw::c_char,
-    ) -> *mut window;
+    pub fn window_destroy(arg1: *mut window);
+}
+extern "C" {
+    pub fn window_pane_set_event(arg1: *mut window_pane);
 }
 extern "C" {
     pub fn window_get_active_at(arg1: *mut window, arg2: u_int, arg3: u_int) -> *mut window_pane;
@@ -21152,6 +22027,7 @@ extern "C" {
     pub fn window_set_active_pane(
         arg1: *mut window,
         arg2: *mut window_pane,
+        arg3: ::std::os::raw::c_int,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
@@ -21161,9 +22037,8 @@ extern "C" {
     pub fn window_add_pane(
         arg1: *mut window,
         arg2: *mut window_pane,
-        arg3: ::std::os::raw::c_int,
+        arg3: u_int,
         arg4: ::std::os::raw::c_int,
-        arg5: u_int,
     ) -> *mut window_pane;
 }
 extern "C" {
@@ -21217,19 +22092,6 @@ extern "C" {
     pub fn window_pane_destroy_ready(arg1: *mut window_pane) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn window_pane_spawn(
-        arg1: *mut window_pane,
-        arg2: ::std::os::raw::c_int,
-        arg3: *mut *mut ::std::os::raw::c_char,
-        arg4: *const ::std::os::raw::c_char,
-        arg5: *const ::std::os::raw::c_char,
-        arg6: *const ::std::os::raw::c_char,
-        arg7: *mut environ,
-        arg8: *mut termios,
-        arg9: *mut *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
     pub fn window_pane_resize(arg1: *mut window_pane, arg2: u_int, arg3: u_int);
 }
 extern "C" {
@@ -21261,7 +22123,7 @@ extern "C" {
 }
 extern "C" {
     pub fn window_pane_get_palette(
-        arg1: *const window_pane,
+        arg1: *mut window_pane,
         arg2: ::std::os::raw::c_int,
     ) -> ::std::os::raw::c_int;
 }
@@ -21277,12 +22139,16 @@ extern "C" {
     pub fn window_pane_reset_mode(arg1: *mut window_pane);
 }
 extern "C" {
+    pub fn window_pane_reset_mode_all(arg1: *mut window_pane);
+}
+extern "C" {
     pub fn window_pane_key(
         arg1: *mut window_pane,
         arg2: *mut client,
         arg3: *mut session,
-        arg4: key_code,
-        arg5: *mut mouse_event,
+        arg4: *mut winlink,
+        arg5: key_code,
+        arg6: *mut mouse_event,
     );
 }
 extern "C" {
@@ -21419,7 +22285,6 @@ extern "C" {
         arg2: layout_type,
         arg3: ::std::os::raw::c_int,
         arg4: ::std::os::raw::c_int,
-        arg5: ::std::os::raw::c_int,
     ) -> *mut layout_cell;
 }
 extern "C" {
@@ -21598,10 +22463,8 @@ extern "C" {
     pub static window_copy_mode: window_mode;
 }
 extern "C" {
-    pub fn window_copy_init_from_pane(arg1: *mut window_pane, arg2: ::std::os::raw::c_int);
-}
-extern "C" {
-    pub fn window_copy_init_for_output(arg1: *mut window_pane);
+    #[link_name = "\u{1}window_view_mode"]
+    pub static window_view_mode: window_mode;
 }
 extern "C" {
     pub fn window_copy_add(arg1: *mut window_pane, arg2: *const ::std::os::raw::c_char, ...);
@@ -21618,9 +22481,6 @@ extern "C" {
 }
 extern "C" {
     pub fn window_copy_start_drag(arg1: *mut client, arg2: *mut mouse_event);
-}
-extern "C" {
-    pub fn window_copy_add_formats(arg1: *mut window_pane, arg2: *mut format_tree);
 }
 extern "C" {
     pub fn check_window_name(arg1: *mut window);
@@ -21730,19 +22590,18 @@ extern "C" {
     pub fn session_create(
         arg1: *const ::std::os::raw::c_char,
         arg2: *const ::std::os::raw::c_char,
-        arg3: ::std::os::raw::c_int,
-        arg4: *mut *mut ::std::os::raw::c_char,
-        arg5: *const ::std::os::raw::c_char,
-        arg6: *const ::std::os::raw::c_char,
-        arg7: *mut environ,
-        arg8: *mut options,
-        arg9: *mut termios,
-        arg10: ::std::os::raw::c_int,
-        arg11: *mut *mut ::std::os::raw::c_char,
+        arg3: *const ::std::os::raw::c_char,
+        arg4: *mut environ,
+        arg5: *mut options,
+        arg6: *mut termios,
     ) -> *mut session;
 }
 extern "C" {
-    pub fn session_destroy(arg1: *mut session, arg2: *const ::std::os::raw::c_char);
+    pub fn session_destroy(
+        arg1: *mut session,
+        arg2: ::std::os::raw::c_int,
+        arg3: *const ::std::os::raw::c_char,
+    );
 }
 extern "C" {
     pub fn session_add_ref(arg1: *mut session, arg2: *const ::std::os::raw::c_char);
@@ -21889,18 +22748,6 @@ extern "C" {
     pub fn utf8_cstrwidth(arg1: *const ::std::os::raw::c_char) -> u_int;
 }
 extern "C" {
-    pub fn utf8_rtrimcstr(
-        arg1: *const ::std::os::raw::c_char,
-        arg2: u_int,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn utf8_trimcstr(
-        arg1: *const ::std::os::raw::c_char,
-        arg2: u_int,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
     pub fn utf8_padcstr(
         arg1: *const ::std::os::raw::c_char,
         arg2: u_int,
@@ -21944,13 +22791,13 @@ extern "C" {
 }
 extern "C" {
     pub fn style_parse(
-        arg1: *const grid_cell,
-        arg2: *mut grid_cell,
+        arg1: *mut style,
+        arg2: *const grid_cell,
         arg3: *const ::std::os::raw::c_char,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn style_tostring(arg1: *mut grid_cell) -> *const ::std::os::raw::c_char;
+    pub fn style_tostring(arg1: *mut style) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
     pub fn style_apply(
@@ -21967,7 +22814,28 @@ extern "C" {
     );
 }
 extern "C" {
-    pub fn style_equal(arg1: *const grid_cell, arg2: *const grid_cell) -> ::std::os::raw::c_int;
+    pub fn style_equal(arg1: *mut style, arg2: *mut style) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn style_set(arg1: *mut style, arg2: *const grid_cell);
+}
+extern "C" {
+    pub fn style_copy(arg1: *mut style, arg2: *mut style);
+}
+extern "C" {
+    pub fn style_is_default(arg1: *mut style) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn spawn_window(
+        arg1: *mut spawn_context,
+        arg2: *mut *mut ::std::os::raw::c_char,
+    ) -> *mut winlink;
+}
+extern "C" {
+    pub fn spawn_pane(
+        arg1: *mut spawn_context,
+        arg2: *mut *mut ::std::os::raw::c_char,
+    ) -> *mut window_pane;
 }
 extern "C" {
     pub fn init_plugins();
@@ -21980,6 +22848,9 @@ extern "C" {
 }
 extern "C" {
     pub fn plugin_notify(ne: *mut notify_entry);
+}
+extern "C" {
+    pub fn get_plugins_list(list: *mut *mut ::std::os::raw::c_char);
 }
 extern "C" {
     pub fn plugin_call(
