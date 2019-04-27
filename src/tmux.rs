@@ -14,6 +14,7 @@ pub use crate::tmux_bindings::{
     FORMAT_FUNCTION_PLUGIN,
     CMD_PLUGIN,
     NOTIFICATION_PLUGIN,
+    MULTI_PLUGIN,
 
     notification_cb,
     notify_entry,
@@ -25,7 +26,20 @@ pub use crate::tmux_bindings::{
     window,
     window_pane,
 
+    cmd_retval,
+    cmd_retval_CMD_RETURN_ERROR,
+    cmd_retval_CMD_RETURN_NORMAL,
+    cmd_retval_CMD_RETURN_WAIT,
+    cmd_retval_CMD_RETURN_STOP,
+
+    cmd,
+    cmd_entry__bindgen_ty_1,
+    cmd_entry_flag,
     cmd_find_state,
+    cmd_find_type,
+    cmdq_item,
+    cmdq_print,
+    cmdq_error,
     event,
     grid_cell,
     mouse_event,

@@ -152,7 +152,7 @@ macro_rules! format_function_plugin {
 
 /// Defines a new notification callback.
 ///
-/// This macro has to variants: If passed just a callback function, that function
+/// This macro has two variants: If passed just a callback function, that function
 /// is registered as a callback for all hook events. If passed a null-terminated hook name
 /// and a callback function, that function will be registered as a callback for that specific
 /// hook event. The callback function itself will in either case recive an argument of type
@@ -213,6 +213,71 @@ macro_rules! notification_plugin {
     };
 }
 
+#[macro_export]
+macro_rules! cmd_plugin {
+    ($name:expr, $alias:expr, $usage:expr, $argsmin:expr, $argsmax:expr, |$self:ident| $body:block) => {
+        cmd_plugin!(
+            $name,
+            $alias,
+            $usage,
+            $argsmin,
+            $argsmax,
+            |$self: ident, _args| $body
+        );
+    };
+    ($name:expr, $alias:expr, $usage:expr, $argsmin:expr, $argsmax:expr, |$self:ident, $args:ident| $body:block) => {
+        mod tmux_cmd_plugin {
+            use super::*;
+            use $crate::tmux;
+
+            $crate::__plugin!(
+                cmd,
+                tmux::cmd_entry {
+                    name: $name as *const u8 as *const $crate::libc::c_char,
+                    alias: $alias as *const u8 as *const $crate::libc::c_char,
+                    args: tmux::cmd_entry__bindgen_ty_1 {
+                        template: b"" as *const u8 as *const $crate::libc::c_char,
+                        lower: $argsmin,
+                        upper: $argsmax,
+                    },
+                    usage: $usage as *const u8 as *const $crate::libc::c_char,
+                    source: tmux::cmd_entry_flag {
+                        flag: 0,
+                        type_: 0 as tmux::cmd_find_type,
+                        flags: 0,
+                    },
+                    target: tmux::cmd_entry_flag {
+                        flag: 0,
+                        type_: 0,
+                        flags: 0,
+                    },
+                    flags: 0,
+                    exec: Some(cmd_exec),
+                }
+            );
+
+            fn cmd_plugin_body<'a>(
+                $self: *mut tmux::cmd,
+                $args: impl Iterator<Item = &'a CStr>,
+            ) -> tmux::cmd_retval {
+                $body
+            }
+
+            pub unsafe extern "C" fn cmd_exec(
+                $self: *mut tmux::cmd,
+                _item: *mut tmux::cmdq_item,
+            ) -> tmux::cmd_retval {
+                let args = *(*$self).args;
+                let argv: &[*mut i8] = std::slice::from_raw_parts(args.argv, args.argc as usize);
+                let argv = argv
+                    .iter()
+                    .map(|arg| unsafe { ::std::ffi::CStr::from_ptr(*arg) });
+                cmd_plugin_body($self, argv)
+            }
+        }
+    };
+}
+
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __plugin {
@@ -224,6 +289,9 @@ macro_rules! __plugin {
     };
     (notify, $body:expr) => {
         $crate::__plugin!(notify, tmux::NOTIFICATION_PLUGIN, $body);
+    };
+    (cmd, $body:expr) => {
+        $crate::__plugin!(cmd, tmux::CMD_PLUGIN, $body);
     };
     ($field:ident, $type:expr, $body:expr) => {
         #[repr(transparent)]
