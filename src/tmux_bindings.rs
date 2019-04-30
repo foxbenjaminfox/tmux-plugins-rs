@@ -1782,6 +1782,7 @@ pub const PROMPT_INCREMENTAL: u32 = 4;
 pub const PROMPT_NOFORMAT: u32 = 8;
 pub const KEY_BINDING_REPEAT: u32 = 1;
 pub const OPTIONS_TABLE_IS_ARRAY: u32 = 1;
+pub const OPTIONS_TABLE_IS_HOOK: u32 = 2;
 pub const CMD_TARGET_PANE_USAGE: &'static [u8; 17usize] = b"[-t target-pane]\0";
 pub const CMD_TARGET_WINDOW_USAGE: &'static [u8; 19usize] = b"[-t target-window]\0";
 pub const CMD_TARGET_SESSION_USAGE: &'static [u8; 20usize] = b"[-t target-session]\0";
@@ -11326,6 +11327,11 @@ extern "C" {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
+pub struct args_value {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
 pub struct environ {
     _unused: [u8; 0],
 }
@@ -12623,117 +12629,6 @@ fn bindgen_test_layout_style() {
             stringify!(style),
             "::",
             stringify!(range_argument)
-        )
-    );
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct hook {
-    pub name: *const ::std::os::raw::c_char,
-    pub cmdlist: *mut cmd_list,
-    pub entry: hook__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct hook__bindgen_ty_1 {
-    pub rbe_left: *mut hook,
-    pub rbe_right: *mut hook,
-    pub rbe_parent: *mut hook,
-    pub rbe_color: ::std::os::raw::c_int,
-}
-#[test]
-fn bindgen_test_layout_hook__bindgen_ty_1() {
-    assert_eq!(
-        ::std::mem::size_of::<hook__bindgen_ty_1>(),
-        32usize,
-        concat!("Size of: ", stringify!(hook__bindgen_ty_1))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<hook__bindgen_ty_1>(),
-        8usize,
-        concat!("Alignment of ", stringify!(hook__bindgen_ty_1))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<hook__bindgen_ty_1>())).rbe_left as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(hook__bindgen_ty_1),
-            "::",
-            stringify!(rbe_left)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<hook__bindgen_ty_1>())).rbe_right as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(hook__bindgen_ty_1),
-            "::",
-            stringify!(rbe_right)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<hook__bindgen_ty_1>())).rbe_parent as *const _ as usize },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(hook__bindgen_ty_1),
-            "::",
-            stringify!(rbe_parent)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<hook__bindgen_ty_1>())).rbe_color as *const _ as usize },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(hook__bindgen_ty_1),
-            "::",
-            stringify!(rbe_color)
-        )
-    );
-}
-#[test]
-fn bindgen_test_layout_hook() {
-    assert_eq!(
-        ::std::mem::size_of::<hook>(),
-        48usize,
-        concat!("Size of: ", stringify!(hook))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<hook>(),
-        8usize,
-        concat!("Alignment of ", stringify!(hook))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<hook>())).name as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(hook),
-            "::",
-            stringify!(name)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<hook>())).cmdlist as *const _ as usize },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(hook),
-            "::",
-            stringify!(cmdlist)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<hook>())).entry as *const _ as usize },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(hook),
-            "::",
-            stringify!(entry)
         )
     );
 }
@@ -15296,7 +15191,6 @@ pub struct session {
     pub windows: winlinks,
     pub statusat: ::std::os::raw::c_int,
     pub statuslines: u_int,
-    pub hooks: *mut hooks,
     pub options: *mut options,
     pub flags: ::std::os::raw::c_int,
     pub attached: u_int,
@@ -15412,7 +15306,7 @@ fn bindgen_test_layout_session__bindgen_ty_2() {
 fn bindgen_test_layout_session() {
     assert_eq!(
         ::std::mem::size_of::<session>(),
-        352usize,
+        344usize,
         concat!("Size of: ", stringify!(session))
     );
     assert_eq!(
@@ -15551,18 +15445,8 @@ fn bindgen_test_layout_session() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<session>())).hooks as *const _ as usize },
-        256usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(session),
-            "::",
-            stringify!(hooks)
-        )
-    );
-    assert_eq!(
         unsafe { &(*(::std::ptr::null::<session>())).options as *const _ as usize },
-        264usize,
+        256usize,
         concat!(
             "Offset of field: ",
             stringify!(session),
@@ -15572,7 +15456,7 @@ fn bindgen_test_layout_session() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<session>())).flags as *const _ as usize },
-        272usize,
+        264usize,
         concat!(
             "Offset of field: ",
             stringify!(session),
@@ -15582,7 +15466,7 @@ fn bindgen_test_layout_session() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<session>())).attached as *const _ as usize },
-        276usize,
+        268usize,
         concat!(
             "Offset of field: ",
             stringify!(session),
@@ -15592,7 +15476,7 @@ fn bindgen_test_layout_session() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<session>())).tio as *const _ as usize },
-        280usize,
+        272usize,
         concat!(
             "Offset of field: ",
             stringify!(session),
@@ -15602,7 +15486,7 @@ fn bindgen_test_layout_session() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<session>())).environ as *const _ as usize },
-        288usize,
+        280usize,
         concat!(
             "Offset of field: ",
             stringify!(session),
@@ -15612,7 +15496,7 @@ fn bindgen_test_layout_session() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<session>())).references as *const _ as usize },
-        296usize,
+        288usize,
         concat!(
             "Offset of field: ",
             stringify!(session),
@@ -15622,7 +15506,7 @@ fn bindgen_test_layout_session() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<session>())).gentry as *const _ as usize },
-        304usize,
+        296usize,
         concat!(
             "Offset of field: ",
             stringify!(session),
@@ -15632,7 +15516,7 @@ fn bindgen_test_layout_session() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<session>())).entry as *const _ as usize },
-        320usize,
+        312usize,
         concat!(
             "Offset of field: ",
             stringify!(session),
@@ -18978,6 +18862,7 @@ pub union options_value {
     pub number: ::std::os::raw::c_longlong,
     pub style: style,
     pub array: options_array,
+    pub cmdlist: *mut cmd_list,
     _bindgen_union_align: [u64; 7usize],
 }
 #[test]
@@ -19032,6 +18917,16 @@ fn bindgen_test_layout_options_value() {
             stringify!(array)
         )
     );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<options_value>())).cmdlist as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(options_value),
+            "::",
+            stringify!(cmdlist)
+        )
+    );
 }
 pub const options_table_type_OPTIONS_TABLE_STRING: options_table_type = 0;
 pub const options_table_type_OPTIONS_TABLE_NUMBER: options_table_type = 1;
@@ -19040,6 +18935,7 @@ pub const options_table_type_OPTIONS_TABLE_COLOUR: options_table_type = 3;
 pub const options_table_type_OPTIONS_TABLE_FLAG: options_table_type = 4;
 pub const options_table_type_OPTIONS_TABLE_CHOICE: options_table_type = 5;
 pub const options_table_type_OPTIONS_TABLE_STYLE: options_table_type = 6;
+pub const options_table_type_OPTIONS_TABLE_COMMAND: options_table_type = 7;
 pub type options_table_type = u32;
 pub const options_table_scope_OPTIONS_TABLE_NONE: options_table_scope = 0;
 pub const options_table_scope_OPTIONS_TABLE_SERVER: options_table_scope = 1;
@@ -19206,6 +19102,7 @@ pub struct spawn_context {
     pub name: *const ::std::os::raw::c_char,
     pub argv: *mut *mut ::std::os::raw::c_char,
     pub argc: ::std::os::raw::c_int,
+    pub environ: *mut environ,
     pub idx: ::std::os::raw::c_int,
     pub cwd: *const ::std::os::raw::c_char,
     pub flags: ::std::os::raw::c_int,
@@ -19214,7 +19111,7 @@ pub struct spawn_context {
 fn bindgen_test_layout_spawn_context() {
     assert_eq!(
         ::std::mem::size_of::<spawn_context>(),
-        80usize,
+        96usize,
         concat!("Size of: ", stringify!(spawn_context))
     );
     assert_eq!(
@@ -19303,8 +19200,18 @@ fn bindgen_test_layout_spawn_context() {
         )
     );
     assert_eq!(
+        unsafe { &(*(::std::ptr::null::<spawn_context>())).environ as *const _ as usize },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(spawn_context),
+            "::",
+            stringify!(environ)
+        )
+    );
+    assert_eq!(
         unsafe { &(*(::std::ptr::null::<spawn_context>())).idx as *const _ as usize },
-        60usize,
+        72usize,
         concat!(
             "Offset of field: ",
             stringify!(spawn_context),
@@ -19314,7 +19221,7 @@ fn bindgen_test_layout_spawn_context() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<spawn_context>())).cwd as *const _ as usize },
-        64usize,
+        80usize,
         concat!(
             "Offset of field: ",
             stringify!(spawn_context),
@@ -19324,7 +19231,7 @@ fn bindgen_test_layout_spawn_context() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<spawn_context>())).flags as *const _ as usize },
-        72usize,
+        88usize,
         concat!(
             "Offset of field: ",
             stringify!(spawn_context),
@@ -19332,10 +19239,6 @@ fn bindgen_test_layout_spawn_context() {
             stringify!(flags)
         )
     );
-}
-extern "C" {
-    #[link_name = "\u{1}global_hooks"]
-    pub static mut global_hooks: *mut hooks;
 }
 extern "C" {
     #[link_name = "\u{1}global_options"]
@@ -19949,42 +19852,6 @@ fn bindgen_test_layout_format_tree() {
     );
 }
 extern "C" {
-    pub fn hooks_get(arg1: *mut session) -> *mut hooks;
-}
-extern "C" {
-    pub fn hooks_create(arg1: *mut hooks) -> *mut hooks;
-}
-extern "C" {
-    pub fn hooks_free(arg1: *mut hooks);
-}
-extern "C" {
-    pub fn hooks_first(arg1: *mut hooks) -> *mut hook;
-}
-extern "C" {
-    pub fn hooks_next(arg1: *mut hook) -> *mut hook;
-}
-extern "C" {
-    pub fn hooks_add(arg1: *mut hooks, arg2: *const ::std::os::raw::c_char, arg3: *mut cmd_list);
-}
-extern "C" {
-    pub fn hooks_copy(arg1: *mut hooks, arg2: *mut hooks);
-}
-extern "C" {
-    pub fn hooks_remove(arg1: *mut hooks, arg2: *const ::std::os::raw::c_char);
-}
-extern "C" {
-    pub fn hooks_find(arg1: *mut hooks, arg2: *const ::std::os::raw::c_char) -> *mut hook;
-}
-extern "C" {
-    pub fn hooks_insert(
-        arg1: *mut hooks,
-        arg2: *mut cmdq_item,
-        arg3: *mut cmd_find_state,
-        arg4: *const ::std::os::raw::c_char,
-        ...
-    );
-}
-extern "C" {
     pub fn notify_hook(arg1: *mut cmdq_item, arg2: *const ::std::os::raw::c_char);
 }
 extern "C" {
@@ -20152,10 +20019,15 @@ extern "C" {
         arg2: u_int,
         arg3: *const ::std::os::raw::c_char,
         arg4: ::std::os::raw::c_int,
+        arg5: *mut *mut ::std::os::raw::c_char,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn options_array_assign(arg1: *mut options_entry, arg2: *const ::std::os::raw::c_char);
+    pub fn options_array_assign(
+        arg1: *mut options_entry,
+        arg2: *const ::std::os::raw::c_char,
+        arg3: *mut *mut ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn options_array_first(arg1: *mut options_entry) -> *mut options_array_item;
@@ -20675,6 +20547,16 @@ extern "C" {
     pub fn args_get(arg1: *mut args, arg2: u_char) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
+    pub fn args_first_value(
+        arg1: *mut args,
+        arg2: u_char,
+        arg3: *mut *mut args_value,
+    ) -> *const ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn args_next_value(arg1: *mut *mut args_value) -> *const ::std::os::raw::c_char;
+}
+extern "C" {
     pub fn args_strtonum(
         arg1: *mut args,
         arg2: u_char,
@@ -20907,6 +20789,15 @@ extern "C" {
 }
 extern "C" {
     pub fn cmdq_append(arg1: *mut client, arg2: *mut cmdq_item);
+}
+extern "C" {
+    pub fn cmdq_insert_hook(
+        arg1: *mut session,
+        arg2: *mut cmdq_item,
+        arg3: *mut cmd_find_state,
+        arg4: *const ::std::os::raw::c_char,
+        ...
+    );
 }
 extern "C" {
     pub fn cmdq_format(
@@ -23208,10 +23099,5 @@ pub struct __locale_data {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct bufferevent_ops {
-    pub _address: u8,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct hooks {
     pub _address: u8,
 }
